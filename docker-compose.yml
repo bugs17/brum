@@ -1,0 +1,9 @@
+services:
+  brum-builder:
+    build: .
+    container_name: brum_build_container
+    volumes:
+      - .:/app
+    # Memberi akses ke hardware server secara maksimal
+    privileged: true
+    network_mode: host

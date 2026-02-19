@@ -1,0 +1,6 @@
+# 1. Install dependencies
+npm install
+
+# 2. Build lokal (akan otomatis pakai 24 core CPU server)
+# Kita arahkan output ke folder khusus agar mudah diambil
+npx eas-cli build --platform android --local --profile development --output ./artefak/brum-dev.apk
