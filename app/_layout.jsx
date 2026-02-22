@@ -1,8 +1,8 @@
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import "react-native-gesture-handler";
 import "react-native-reanimated";
 
 export const unstable_settings = {
@@ -11,12 +11,18 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const [loaded] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-    SfThin: require("../assets/fonts/SF-Pro-Rounded-Thin.otf"),
-    SfRegular: require("../assets/fonts/SF-Pro-Rounded-Regular.otf"),
-    SfMedium: require("../assets/fonts/SF-Pro-Rounded-Medium.otf"),
-    SfSemibold: require("../assets/fonts/SF-Pro-Rounded-Semibold.otf"),
-    SfBold: require("../assets/fonts/SF-Pro-Rounded-Bold.otf"),
+    IB_bold: require("../assets/fonts/ibm-plex-mono/IBMPlexMono-Bold.ttf"),
+    IB_light: require("../assets/fonts/ibm-plex-mono/IBMPlexMono-Light.ttf"),
+    IB_extra_light: require("../assets/fonts/ibm-plex-mono/IBMPlexMono-ExtraLight.ttf"),
+    IB_medium: require("../assets/fonts/ibm-plex-mono/IBMPlexMono-Medium.ttf"),
+    IB_regular: require("../assets/fonts/ibm-plex-mono/IBMPlexMono-Regular.ttf"),
+    IB_SemiBold: require("../assets/fonts/ibm-plex-mono/IBMPlexMono-SemiBold.ttf"),
+    IB_Thin: require("../assets/fonts/ibm-plex-mono/IBMPlexMono-Thin.ttf"),
+    Comforta_bold: require("../assets/fonts/comfortaa/Comfortaa-Bold.ttf"),
+    Comforta_light: require("../assets/fonts/comfortaa/Comfortaa-Light.ttf"),
+    Comforta_medium: require("../assets/fonts/comfortaa/Comfortaa-Medium.ttf"),
+    Comforta_regular: require("../assets/fonts/comfortaa/Comfortaa-Regular.ttf"),
+    Comforta_Semibold: require("../assets/fonts/comfortaa/Comfortaa-SemiBold.ttf"),
   });
 
   // Loading => keep splash visible
@@ -32,13 +38,9 @@ export default function RootLayout() {
   return (
     <>
       <Stack>
+        <Stack.Screen name="(on-boarding)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="modal"
-          options={{ presentation: "modal", title: "Modal" }}
-        />
       </Stack>
-      <StatusBar style="auto" />
     </>
   );
 }
