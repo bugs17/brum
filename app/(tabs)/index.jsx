@@ -129,12 +129,12 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 22,
-    fontFamily: Fonts.button, // IBM Plex Mono
+    fontFamily: Fonts.c_bold, // IBM Plex Mono
     color: "#000",
   },
   subGreeting: {
     fontSize: 14,
-    fontFamily: Fonts.copywriting, // Comfortaa
+    fontFamily: Fonts.medium, // Comfortaa
     color: "#666",
     marginTop: 4,
   },
@@ -199,10 +199,10 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontFamily: Fonts.button,
+    fontFamily: Fonts.c_semibold,
   },
   seeAll: {
-    fontFamily: Fonts.copywriting,
+    fontFamily: Fonts.regular,
     fontSize: 12,
     color: "#666",
     textDecorationLine: "underline",
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
   },
   motorName: {
     fontSize: 16,
-    fontFamily: Fonts.button,
+    fontFamily: Fonts.bold,
   },
   locationRow: {
     flexDirection: "row",
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
   },
   locationText: {
     fontSize: 12,
-    fontFamily: Fonts.copywriting,
+    fontFamily: Fonts.medium,
     color: "#666",
     marginLeft: 4,
   },
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
   },
   priceText: {
     fontSize: 16,
-    fontFamily: Fonts.button,
+    fontFamily: Fonts.bold,
     color: "#000",
   },
   bookButton: {
@@ -306,6 +306,6 @@ const styles = StyleSheet.create({
   },
   bookButtonText: {
     fontSize: 12,
-    fontFamily: Fonts.button,
+    fontFamily: Fonts.medium,
   },
 });

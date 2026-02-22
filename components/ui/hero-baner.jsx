@@ -1,9 +1,9 @@
 import { MotiView } from "moti";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import {
-    ArrowRightIcon,
-    ShieldCheckIcon,
-    UserPlusIcon,
+  ArrowRightIcon,
+  ShieldCheckIcon,
+  UserPlusIcon,
 } from "react-native-heroicons/solid";
 import { Fonts } from "../../constants/fonts";
 
@@ -132,12 +132,12 @@ const styles = StyleSheet.create({
   },
   bannerTitle: {
     fontSize: 16,
-    fontFamily: Fonts.button,
+    fontFamily: Fonts.c_bold,
     color: "black",
   },
   bannerDesc: {
     fontSize: 11,
-    fontFamily: Fonts.copywriting,
+    fontFamily: Fonts.medium,
     color: "#333",
     lineHeight: 16,
     marginTop: 2,

@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     overflow: "hidden", // Supaya teks yang keluar nggak kelihatan
   },
   placeholderAsInput: {
-    fontFamily: Fonts.copywriting,
+    fontFamily: Fonts.regular,
     fontSize: 14,
     color: "#999",
   },
