@@ -39,6 +39,11 @@ export default function RootLayout() {
         <Stack.Screen name="(on-boarding)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="detail-motor" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="profile-completion"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="payment" options={{ headerShown: false }} />
       </Stack>
     </>
   );

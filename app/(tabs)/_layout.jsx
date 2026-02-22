@@ -8,11 +8,13 @@ import { HapticTab } from "@/components/haptic-tab";
 import {
   HomeIcon as HomeOutline,
   MapPinIcon as MapPinIconOutline,
+  TicketIcon as TicketOutline,
   UserIcon as UserOutline,
 } from "react-native-heroicons/outline";
 import {
   HomeIcon as HomeSolid,
   MapPinIcon as MapPinIconSolid,
+  TicketIcon as TicketSolid,
   UserIcon as UserSolid,
 } from "react-native-heroicons/solid";
 
@@ -20,28 +22,28 @@ export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const TAB_BAR_HEIGHT = 65;
 
+  // --- LOGIKA AUTH & ORDER ---
+  // Nantinya ini diambil dari Global State (Zustand/Context/Supabase)
+  const isAuthenticated = true; // Ganti dengan logic auth asli
+  const hasActiveOrder = true; // Ganti dengan logic cek database order
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarShowLabel: false,
-
-        // RESET TOTAL: Memaksa container icon mengisi seluruh tinggi tab bar
         tabBarIconStyle: {
           width: "100%",
           height: "100%",
           alignItems: "center",
           justifyContent: "center",
         },
-
-        // RESET TOTAL: Memastikan item tidak punya padding/margin tersembunyi
         tabBarItemStyle: {
           height: TAB_BAR_HEIGHT,
           paddingVertical: 0,
           marginVertical: 0,
         },
-
         tabBarStyle: {
           position: "absolute",
           bottom: insets.bottom + 20,
@@ -54,8 +56,6 @@ export default function TabLayout() {
           elevation: 0,
           shadowOpacity: 0,
           borderTopWidth: 2,
-
-          // Memastikan bar itu sendiri tidak punya padding internal
           paddingTop: 0,
           paddingBottom: 0,
         },
@@ -79,6 +79,7 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="discovery"
         options={{
@@ -97,6 +98,29 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      {/* --- TAB SEWA (CONDITIONAL) --- */}
+      <Tabs.Screen
+        name="sewa"
+        options={{
+          // Jika tidak login ATAU tidak ada order, tab ini hilang dari bar
+          href: isAuthenticated && hasActiveOrder ? "/sewa" : null,
+          tabBarIcon: ({ focused }) => (
+            <View
+              style={
+                focused ? styles.activeContainer : styles.inactiveContainer
+              }
+            >
+              {focused ? (
+                <TicketSolid size={24} color="#000" />
+              ) : (
+                <TicketOutline size={24} color="#000" />
+              )}
+            </View>
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="profile"
         options={{
@@ -127,12 +151,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 2,
     borderColor: "#000",
-    // Menghilangkan margin/padding yang mungkin terbawa dari copy-paste sebelumnya
     alignItems: "center",
     justifyContent: "center",
   },
   inactiveContainer: {
-    // Memberikan area yang sama besarnya agar transisinya tidak goyang
     paddingVertical: 8,
     paddingHorizontal: 16,
     alignItems: "center",

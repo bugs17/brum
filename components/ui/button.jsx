@@ -1,10 +1,10 @@
 import { MotiView } from "moti";
 import {
-    ActivityIndicator,
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { Fonts } from "../../constants/fonts";
 
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    fontFamily: Fonts.regular,
+    fontFamily: Fonts.semibold,
     textAlign: "center",
   },
 });

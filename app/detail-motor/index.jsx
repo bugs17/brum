@@ -1,21 +1,46 @@
 import { useRouter } from "expo-router";
 import { MotiView } from "moti";
+import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
-    BoltIcon,
-    ChevronLeftIcon,
-    MapPinIcon
+  BoltIcon,
+  ChevronLeftIcon,
+  MapPinIcon,
 } from "react-native-heroicons/solid";
 import {
-    SafeAreaView,
-    useSafeAreaInsets,
+  SafeAreaView,
+  useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import BookingConfigModal from "../../components/modal-config-booking";
+import LoginModal from "../../components/modal-login";
 import WishlistButton from "../../components/ui/wish-list-icon";
 import { Fonts } from "../../constants/fonts";
 
 const MotorDetailScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+
+  // DUMMY AUTH STATE
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoginModalVisible, setLoginModalVisible] = useState(false);
+  const [isConfigModalVisible, setConfigModalVisible] = useState(false);
+
+  const handleBookingPress = () => {
+    if (!isLoggedIn) {
+      setLoginModalVisible(true);
+    } else {
+      // Langsung ke proses order jika sudah login
+      setConfigModalVisible(true);
+    }
+  };
+
+  const handleConfirmBooking = (data) => {
+    // Data berisi { duration, totalPrice }
+    setConfigModalVisible(false);
+    router.push("/payment");
+    // Nanti lo bisa kirim data ini lewat params atau global state
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* --- CUSTOM HEADER --- */}
@@ -86,7 +111,10 @@ const MotorDetailScreen = ({ navigation }) => {
           </Text>
         </View>
 
-        <Pressable style={styles.bookingBtnContainer}>
+        <Pressable
+          onPress={handleBookingPress}
+          style={styles.bookingBtnContainer}
+        >
           {({ pressed }) => (
             <View style={{ position: "relative", flex: 1 }}>
               <View style={styles.btnShadow} />
@@ -104,6 +132,23 @@ const MotorDetailScreen = ({ navigation }) => {
           )}
         </Pressable>
       </View>
+
+      <LoginModal
+        isVisible={isLoginModalVisible}
+        onClose={() => setLoginModalVisible(false)}
+        onLoginSuccess={() => {
+          setLoginModalVisible(false);
+          setIsLoggedIn(true);
+          router.push("/profile-completion");
+        }}
+      />
+
+      <BookingConfigModal
+        isVisible={isConfigModalVisible}
+        onClose={() => setConfigModalVisible(false)}
+        onConfirm={handleConfirmBooking}
+        unitPrice={150000} // Bisa ambil dari data motor
+      />
     </SafeAreaView>
   );
 };
