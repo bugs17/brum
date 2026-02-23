@@ -3,7 +3,6 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { HapticTab } from "@/components/haptic-tab";
 
 import {
   HomeIcon as HomeOutline,
@@ -31,7 +30,6 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarButton: HapticTab,
         tabBarShowLabel: false,
         tabBarIconStyle: {
           width: "100%",
