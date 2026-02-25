@@ -72,7 +72,7 @@ const Profile = () => {
                 icon={<StarIcon size={24} color="black" />}
                 title="Ulasan Saya"
                 color="#FEF08A"
-                onPress={() => {}}
+                onPress={() => router.push("ulasan")}
               />
             </View>
           </>

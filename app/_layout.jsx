@@ -54,6 +54,7 @@ export default function RootLayout() {
           options={{ headerShown: false }}
         />
         <Stack.Screen name="edit-username" options={{ headerShown: false }} />
+        <Stack.Screen name="ulasan" options={{ headerShown: false }} />
       </Stack>
     </>
   );
