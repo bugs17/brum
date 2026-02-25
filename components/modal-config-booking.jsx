@@ -1,14 +1,20 @@
 import { AnimatePresence, MotiView } from "moti";
 import { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Modal,
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
-import { MinusIcon, PlusIcon, XMarkIcon } from "react-native-heroicons/solid";
+import {
+  BanknotesIcon,
+  MinusIcon,
+  PlusIcon,
+  QrCodeIcon,
+  XMarkIcon,
+} from "react-native-heroicons/solid";
 import { Fonts } from "../constants/fonts";
 
 const BookingConfigModal = ({
@@ -17,31 +23,27 @@ const BookingConfigModal = ({
   onConfirm,
   unitPrice = 150000,
 }) => {
-  const [duration, setDuration] = useState(1); // Default 1 hari
+  const [duration, setDuration] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("QRIS"); // 'QRIS' atau 'CASH'
 
-  // Di dalam komponen BookingConfigModal, tambahkan konstanta fee
   const APP_FEE = 10000;
   const subtotal = duration * unitPrice;
   const grandTotal = subtotal + APP_FEE;
 
-  // Reset state kalau modal ditutup
   useEffect(() => {
     if (!isVisible) {
       setDuration(1);
       setIsProcessing(false);
+      setPaymentMethod("QRIS");
     }
   }, [isVisible]);
 
   const handleConfirm = async () => {
     setIsProcessing(true);
-
-    // Simulasi Backend Logic (Cek ketersediaan & Race Condition)
-    // Di sini nanti lo panggil fungsi Supabase lo
     await new Promise((resolve) => setTimeout(resolve, 2000));
-
     setIsProcessing(false);
-    onConfirm({ duration, totalPrice: duration * unitPrice });
+    onConfirm({ duration, totalPrice: grandTotal, paymentMethod });
   };
 
   const increment = () => setDuration((prev) => prev + 0.5);
@@ -49,7 +51,12 @@ const BookingConfigModal = ({
     setDuration((prev) => (prev > 0.5 ? prev - 0.5 : 0.5));
 
   return (
-    <Modal visible={isVisible} transparent animationType="fade">
+    <Modal
+      visible={isVisible}
+      transparent
+      animationType="slide"
+      onRequestClose={() => onClose()}
+    >
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           <View style={styles.modalShadow} />
@@ -57,7 +64,7 @@ const BookingConfigModal = ({
           <View style={styles.modalBody}>
             {/* Header */}
             <View style={styles.header}>
-              <Text style={styles.modalTitle}>ATUR DURASI</Text>
+              <Text style={styles.modalTitle}>ATUR PESANAN</Text>
               <Pressable onPress={onClose} disabled={isProcessing}>
                 <XMarkIcon size={24} color="black" />
               </Pressable>
@@ -80,40 +87,76 @@ const BookingConfigModal = ({
                   <PlusIcon size={20} color="black" />
                 </Pressable>
               </View>
-              <Text style={styles.helperText}>
-                *Minimal sewa 0.5 hari (12 Jam)
-              </Text>
             </View>
 
-            {/* --- PRICE SUMMARY (Updated) --- */}
+            {/* --- PAYMENT METHOD SELECTION --- */}
+            <View style={styles.paymentSection}>
+              <Text style={styles.sectionLabel}>Metode Pembayaran</Text>
+              <View style={styles.paymentContainer}>
+                {/* QRIS Option */}
+                <Pressable
+                  onPress={() => setPaymentMethod("QRIS")}
+                  style={[
+                    styles.payOption,
+                    paymentMethod === "QRIS" && styles.payOptionActive,
+                  ]}
+                >
+                  <QrCodeIcon
+                    size={20}
+                    color={paymentMethod === "QRIS" ? "black" : "#666"}
+                  />
+                  <Text
+                    style={[
+                      styles.payText,
+                      paymentMethod === "QRIS" && styles.payTextActive,
+                    ]}
+                  >
+                    QRIS
+                  </Text>
+                </Pressable>
+
+                {/* CASH Option */}
+                <Pressable
+                  onPress={() => setPaymentMethod("CASH")}
+                  style={[
+                    styles.payOption,
+                    paymentMethod === "CASH" && styles.payOptionActive,
+                  ]}
+                >
+                  <BanknotesIcon
+                    size={20}
+                    color={paymentMethod === "CASH" ? "black" : "#666"}
+                  />
+                  <Text
+                    style={[
+                      styles.payText,
+                      paymentMethod === "CASH" && styles.payTextActive,
+                    ]}
+                  >
+                    Tunai di Diler
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+
+            {/* Price Summary */}
             <View style={styles.summaryBox}>
-              {/* Baris Harga Sewa */}
               <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>
-                  Harga Sewa ({duration} Hari)
-                </Text>
+                <Text style={styles.summaryLabel}>Harga Sewa</Text>
                 <Text style={styles.summaryValue}>
                   Rp {subtotal.toLocaleString()}
                 </Text>
               </View>
 
-              {/* Baris Biaya Aplikasi */}
               <View style={[styles.summaryRow, { marginTop: 8 }]}>
-                <View
-                  style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-                >
-                  <Text style={styles.summaryLabel}>Biaya Aplikasi</Text>
-                  {/* Icon informasi kecil jika butuh */}
-                </View>
+                <Text style={styles.summaryLabel}>Biaya Aplikasi</Text>
                 <Text style={styles.summaryValue}>
                   Rp {APP_FEE.toLocaleString()}
                 </Text>
               </View>
 
-              {/* Garis Putus-putus */}
               <View style={styles.line} />
 
-              {/* Total Akhir */}
               <View style={styles.summaryRow}>
                 <Text style={styles.totalLabel}>Total Bayar</Text>
                 <Text style={styles.totalValue}>
@@ -149,7 +192,7 @@ const BookingConfigModal = ({
             </Pressable>
           </View>
 
-          {/* --- LOADING OVERLAY (Dalam Modal) --- */}
+          {/* Loading Overlay */}
           <AnimatePresence>
             {isProcessing && (
               <MotiView
@@ -179,7 +222,7 @@ const BookingConfigModal = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
+    backgroundColor: "rgba(0,0,0,0.84)",
     justifyContent: "center",
     padding: 25,
   },
@@ -208,7 +251,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: { fontFamily: Fonts.semibold, fontSize: 18 },
 
-  configSection: { alignItems: "center", marginBottom: 25 },
+  configSection: { alignItems: "center", marginBottom: 20 },
   label: {
     fontFamily: Fonts.regular,
     fontSize: 14,
@@ -234,12 +277,34 @@ const styles = StyleSheet.create({
     color: "#999",
     marginTop: -5,
   },
-  helperText: {
-    fontFamily: Fonts.regular,
-    fontSize: 10,
-    color: "#999",
-    marginTop: 10,
+
+  // PAYMENT SECTION
+  paymentSection: { marginBottom: 20 },
+  sectionLabel: {
+    fontFamily: Fonts.semibold,
+    fontSize: 13,
+    marginBottom: 10,
+    color: "#333",
   },
+  paymentContainer: { flexDirection: "row", gap: 10 },
+  payOption: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    paddingVertical: 12,
+    borderWidth: 2,
+    borderColor: "#EEE",
+    borderRadius: 12,
+    backgroundColor: "#F9FAFB",
+  },
+  payOptionActive: {
+    backgroundColor: "#BAE6FD",
+    borderColor: "black",
+  },
+  payText: { fontFamily: Fonts.regular, fontSize: 12, color: "#666" },
+  payTextActive: { fontFamily: Fonts.semibold, color: "black" },
 
   summaryBox: {
     backgroundColor: "#F9FAFB",
@@ -288,7 +353,6 @@ const styles = StyleSheet.create({
   },
   btnText: { fontFamily: Fonts.semibold, fontSize: 15, color: "black" },
 
-  // LOADING OVERLAY STYLE
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgb(255, 255, 255)",

@@ -1,44 +1,31 @@
-import {
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
-import {
-  EnvelopeIcon,
-  ExclamationCircleIcon,
-  XMarkIcon,
-} from "react-native-heroicons/solid";
+import { MotiView } from "moti";
+import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { ExclamationCircleIcon, XMarkIcon } from "react-native-heroicons/solid";
 import { Fonts } from "../constants/fonts";
-import BrumButton from "./ui/button";
 
-const LoginModal = ({ isVisible, onClose, onLoginSuccess }) => {
+const LoginModalSocialAuth = ({
+  isVisible,
+  onClose,
+  onGoogleLogin,
+  onAppleLogin,
+}) => {
   return (
     <Modal
       visible={isVisible}
       animationType="slide"
       transparent={true}
-      onRequestClose={() => onClose()}
+      onRequestClose={onClose}
     >
-      {/* 1. OVERLAY HITAM: Dipisah agar tidak ikut naik/turun saat keyboard aktif */}
-      <Pressable style={[StyleSheet.absoluteFill, styles.overlay]} />
+      {/* OVERLAY HITAM */}
+      <View style={[StyleSheet.absoluteFill, styles.overlay]} />
 
-      {/* 2. KEYBOARD AVOIDING: Hanya mengurus posisi kotak modal */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.containerAvoidingView}
-        pointerEvents="box-none"
-      >
+      <View style={styles.containerView}>
         <View style={styles.modalContainer}>
-          {/* Shadow Modal - SOP Brum 6px offset */}
+          {/* Shadow Modal Utama */}
           <View style={styles.modalShadow} />
 
           <View style={styles.modalBody}>
-            {/* --- ALERT BANNER (Warna Biru Muda agar tidak bosan neon) --- */}
+            {/* ALERT BANNER */}
             <View style={styles.alertBanner}>
               <ExclamationCircleIcon size={20} color="black" />
               <Text style={styles.alertText}>
@@ -55,30 +42,62 @@ const LoginModal = ({ isVisible, onClose, onLoginSuccess }) => {
             </View>
 
             <Text style={styles.subtitle}>
-              Masukkan email kamu untuk mendapatkan link masuk ajaib (Magic
-              Link).
+              Gunakan akun sosial media kamu untuk masuk lebih cepat dan aman.
             </Text>
 
-            {/* Input Email */}
-            <View style={styles.inputWrapper}>
-              <EnvelopeIcon size={20} color="black" style={styles.inputIcon} />
-              <TextInput
-                placeholder="emailkamu@gmail.com"
-                style={styles.input}
-                placeholderTextColor="#999"
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
+            {/* Social Auth Buttons */}
+            <View style={styles.buttonGroup}>
+              {/* Google Button */}
+              <Pressable onPress={onGoogleLogin} style={styles.btnWrapper}>
+                {({ pressed }) => (
+                  <View style={{ flex: 1, position: "relative" }}>
+                    <View
+                      style={[styles.btnShadow, { backgroundColor: "#000" }]}
+                    />
+                    <MotiView
+                      animate={{
+                        translateX: pressed ? 4 : 0,
+                        translateY: pressed ? 4 : 0,
+                      }}
+                      transition={{ type: "timing", duration: 50 }}
+                      style={[styles.btnBody, { backgroundColor: "white" }]}
+                    >
+                      <Text style={styles.btnText}>LANJUT DENGAN GOOGLE</Text>
+                    </MotiView>
+                  </View>
+                )}
+              </Pressable>
+
+              {/* Apple Button */}
+              <Pressable onPress={onAppleLogin} style={styles.btnWrapper}>
+                {({ pressed }) => (
+                  <View style={{ flex: 1, position: "relative" }}>
+                    <View
+                      style={[styles.btnShadow, { backgroundColor: "#000" }]}
+                    />
+                    <MotiView
+                      animate={{
+                        translateX: pressed ? 4 : 0,
+                        translateY: pressed ? 4 : 0,
+                      }}
+                      transition={{ type: "timing", duration: 50 }}
+                      style={[styles.btnBody, { backgroundColor: "black" }]}
+                    >
+                      <Text style={[styles.btnText, { color: "white" }]}>
+                        LANJUT DENGAN APPLE
+                      </Text>
+                    </MotiView>
+                  </View>
+                )}
+              </Pressable>
             </View>
 
-            {/* Button Masuk */}
-            <BrumButton onPress={onLoginSuccess} title={"KIRIM MAGIC LINK"} />
             <Text style={styles.footerNote}>
-              Belum punya akun? Tenang, otomatis didaftarkan kok!
+              Dengan melanjutkan, kamu menyetujui syarat dan ketentuan kami.
             </Text>
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 };
@@ -87,7 +106,7 @@ const styles = StyleSheet.create({
   overlay: {
     backgroundColor: "rgba(0, 0, 0, 0.84)",
   },
-  containerAvoidingView: {
+  containerView: {
     flex: 1,
     justifyContent: "center",
     padding: 25,
@@ -113,7 +132,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   alertBanner: {
-    backgroundColor: "#BAE6FD", // Biru Muda (Sky Blue)
+    backgroundColor: "#BAE6FD",
     flexDirection: "row",
     alignItems: "center",
     padding: 12,
@@ -150,30 +169,16 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.regular,
     fontSize: 13,
     color: "#666",
-    marginBottom: 20,
+    marginBottom: 25,
     lineHeight: 18,
   },
-  inputWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 2,
-    borderColor: "black",
-    borderRadius: 12,
-    paddingHorizontal: 15,
-    height: 55,
+  buttonGroup: {
+    gap: 18,
     marginBottom: 20,
-    backgroundColor: "#fff",
   },
-  inputIcon: { marginRight: 10 },
-  input: {
-    flex: 1,
-    fontFamily: Fonts.regular,
-    fontSize: 14,
-    color: "black",
-  },
-  actionBtnContainer: {
+  btnWrapper: {
+    height: 55,
     width: "100%",
-    marginBottom: 15,
   },
   btnShadow: {
     position: "absolute",
@@ -181,12 +186,12 @@ const styles = StyleSheet.create({
     left: 4,
     right: -4,
     bottom: -4,
-    backgroundColor: "black",
     borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "black",
   },
   btnBody: {
     flex: 1,
-    backgroundColor: "#dff940",
     borderWidth: 2,
     borderColor: "black",
     borderRadius: 12,
@@ -206,4 +211,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginModal;
+export default LoginModalSocialAuth;

@@ -13,6 +13,7 @@ import {
 } from "react-native-safe-area-context";
 import BookingConfigModal from "../../components/modal-config-booking";
 import LoginModal from "../../components/modal-login";
+import ModalMapsLokasiUnit from "../../components/modal-maps-lokasi-unit";
 import WishlistButton from "../../components/ui/wish-list-icon";
 import { Fonts } from "../../constants/fonts";
 
@@ -20,25 +21,24 @@ const MotorDetailScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
-  // DUMMY AUTH STATE
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoginModalVisible, setLoginModalVisible] = useState(false);
   const [isConfigModalVisible, setConfigModalVisible] = useState(false);
+
+  // Fitur Baru: State untuk Modal Map
+  const [isMapModalVisible, setMapModalVisible] = useState(false);
 
   const handleBookingPress = () => {
     if (!isLoggedIn) {
       setLoginModalVisible(true);
     } else {
-      // Langsung ke proses order jika sudah login
       setConfigModalVisible(true);
     }
   };
 
   const handleConfirmBooking = (data) => {
-    // Data berisi { duration, totalPrice }
     setConfigModalVisible(false);
     router.push("/payment");
-    // Nanti lo bisa kirim data ini lewat params atau global state
   };
 
   return (
@@ -60,23 +60,51 @@ const MotorDetailScreen = ({ navigation }) => {
         <View style={styles.imageContainer}>
           <View style={styles.imageShadow} />
           <View style={styles.imageBody}>
-            {/* Placeholder Gambar Motor */}
             <View style={styles.imgPlaceholder}>
               <Text style={{ fontFamily: Fonts.semibold }}>IMAGE MOTOR</Text>
             </View>
           </View>
         </View>
 
-        {/* --- INFO UTAMA --- */}
+        {/* --- INFO UTAMA & MAP TRIGGER --- */}
         <View style={styles.infoWrapper}>
           <Text style={styles.motorName}>Yamaha NMAX Turbo 2024</Text>
-          <View style={styles.locationRow}>
-            <MapPinIcon size={16} color="#999" />
-            <Text style={styles.locationText}>Abepura, Jayapura (2.5 km)</Text>
-          </View>
+
+          {/* Section Lokasi yang bisa di klik (Neubrutalism Style) */}
+          <Pressable
+            onPress={() => setMapModalVisible(true)}
+            style={styles.locationContainer}
+          >
+            {({ pressed }) => (
+              <View style={{ position: "relative", flex: 1 }}>
+                <View style={styles.locationShadow} />
+                <MotiView
+                  animate={{
+                    translateX: pressed ? 2 : 0,
+                    translateY: pressed ? 2 : 0,
+                  }}
+                  transition={{ type: "timing", duration: 50 }}
+                  style={styles.locationBody}
+                >
+                  <MapPinIcon size={18} color="black" />
+                  <View style={{ flex: 1, marginLeft: 8 }}>
+                    <Text style={styles.locationTextBold}>
+                      Abepura, Jayapura
+                    </Text>
+                    <Text style={styles.locationSubText}>
+                      Jarak: 2.5 km dari lokasimu
+                    </Text>
+                  </View>
+                  <View style={styles.mapBadge}>
+                    <Text style={styles.mapBadgeText}>LIHAT PETA</Text>
+                  </View>
+                </MotiView>
+              </View>
+            )}
+          </Pressable>
         </View>
 
-        {/* --- SPEK GRID (Radius 12 & Shadow 4) --- */}
+        {/* --- SPEK GRID --- */}
         <View style={styles.specGrid}>
           <SpecItem label="Mesin" value="155 CC" />
           <SpecItem label="Trans" value="Otomatis" />
@@ -101,7 +129,13 @@ const MotorDetailScreen = ({ navigation }) => {
         <View style={{ height: 120 }} />
       </ScrollView>
 
-      {/* --- STICKY FOOTER (ACTION) --- */}
+      {/* --- MODAL MAPS DUMMY --- */}
+      <ModalMapsLokasiUnit
+        isMapModalVisible={isMapModalVisible}
+        setMapModalVisible={setMapModalVisible}
+      />
+
+      {/* --- STICKY FOOTER --- */}
       <View style={[styles.footer, { bottom: insets.bottom }]}>
         <View style={styles.priceInfo}>
           <Text style={styles.priceLabel}>Harga Sewa</Text>
@@ -147,13 +181,12 @@ const MotorDetailScreen = ({ navigation }) => {
         isVisible={isConfigModalVisible}
         onClose={() => setConfigModalVisible(false)}
         onConfirm={handleConfirmBooking}
-        unitPrice={150000} // Bisa ambil dari data motor
+        unitPrice={150000}
       />
     </SafeAreaView>
   );
 };
 
-// Reusable Spec Item
 const SpecItem = ({ label, value }) => (
   <View style={styles.specBox}>
     <Text style={styles.specLabel}>{label}</Text>
@@ -200,15 +233,44 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  // INFO
-  motorName: { fontFamily: Fonts.semibold, fontSize: 24, marginBottom: 8 },
-  locationRow: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
-  locationText: {
-    fontFamily: Fonts.regular,
-    fontSize: 14,
-    color: "#666",
-    marginLeft: 6,
+  // INFO & LOCATION CARD
+  infoWrapper: { marginBottom: 25 },
+  motorName: { fontFamily: Fonts.semibold, fontSize: 24, marginBottom: 12 },
+  locationContainer: { height: 70, width: "100%" },
+  locationShadow: {
+    position: "absolute",
+    top: 3,
+    left: 3,
+    right: -3,
+    bottom: -3,
+    backgroundColor: "black",
+    borderRadius: 12,
   },
+  locationBody: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    backgroundColor: "#F3F4F6",
+    borderWidth: 2,
+    borderColor: "black",
+    borderRadius: 12,
+  },
+  locationTextBold: {
+    fontFamily: Fonts.semibold,
+    fontSize: 14,
+    color: "black",
+  },
+  locationSubText: { fontFamily: Fonts.regular, fontSize: 11, color: "#666" },
+  mapBadge: {
+    backgroundColor: "white",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    borderColor: "black",
+  },
+  mapBadgeText: { fontFamily: Fonts.bold, fontSize: 9 },
 
   // SPEC GRID
   specGrid: { flexDirection: "row", gap: 12, marginBottom: 25 },
@@ -224,7 +286,7 @@ const styles = StyleSheet.create({
   specValue: { fontFamily: Fonts.semibold, fontSize: 13, color: "#000" },
 
   // OWNER CARD
-  ownerCard: { height: 80, position: "relative" },
+  ownerCard: { height: 80, position: "relative", marginBottom: 10 },
   ownerShadow: {
     position: "absolute",
     top: 4,
@@ -264,10 +326,67 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  // MODAL MAPS STYLE
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    justifyContent: "center",
+    padding: 20,
+  },
+  mapModalContent: { position: "relative", width: "100%", height: 400 },
+  modalShadowEffect: {
+    position: "absolute",
+    top: 8,
+    left: 8,
+    right: -8,
+    bottom: -8,
+    backgroundColor: "black",
+    borderRadius: 16,
+  },
+  mapModalBody: {
+    flex: 1,
+    backgroundColor: "white",
+    borderWidth: 3,
+    borderColor: "black",
+    borderRadius: 16,
+    padding: 15,
+  },
+  mapHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  mapTitle: { fontFamily: Fonts.bold, fontSize: 18 },
+  closeMapBtn: {
+    padding: 5,
+    borderWidth: 2,
+    borderColor: "black",
+    borderRadius: 8,
+  },
+  dummyMapArea: {
+    flex: 1,
+    backgroundColor: "#E5E7EB",
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "black",
+    justifyContent: "center",
+    alignItems: "center",
+    borderStyle: "dashed",
+  },
+  dummyMapText: { fontFamily: Fonts.bold, fontSize: 14, marginTop: 10 },
+  dummyMapCoords: { fontFamily: Fonts.regular, fontSize: 10, color: "#666" },
+  mapFooter: { marginTop: 15 },
+  mapFooterText: {
+    fontFamily: Fonts.regular,
+    fontSize: 12,
+    color: "#444",
+    textAlign: "center",
+  },
+
   // FOOTER
   footer: {
     position: "absolute",
-
     width: "100%",
     backgroundColor: "white",
     borderTopWidth: 2,
