@@ -53,6 +53,7 @@ export default function RootLayout() {
           name="setting-rekening"
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="edit-username" options={{ headerShown: false }} />
       </Stack>
     </>
   );

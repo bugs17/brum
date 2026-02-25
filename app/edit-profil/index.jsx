@@ -75,7 +75,7 @@ const EditProfileHub = () => {
           subtitle="Ganti nama tampilan kamu"
           icon={<UserCircleIcon size={24} color="black" />}
           color="#FECACA" // Red/Pink
-          onPress={() => {}}
+          onPress={() => router.push("edit-username")}
         />
 
         <View style={styles.infoBox}>
