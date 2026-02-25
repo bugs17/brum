@@ -6,7 +6,7 @@ const ModalMapsLokasiUnit = ({ isMapModalVisible, setMapModalVisible }) => {
   return (
     <Modal
       visible={isMapModalVisible}
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       onRequestClose={() => setMapModalVisible(false)}
     >

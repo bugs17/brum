@@ -1,4 +1,5 @@
 import { MotiView } from "moti";
+import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
   ArrowLeftOnRectangleIcon,
@@ -7,10 +8,9 @@ import {
   ChevronRightIcon,
   Cog6ToothIcon,
   CreditCardIcon,
-  QuestionMarkCircleIcon,
   ShieldCheckIcon,
   StarIcon,
-  UserCircleIcon,
+  UserCircleIcon
 } from "react-native-heroicons/solid";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Fonts } from "../../constants/fonts";
@@ -18,8 +18,8 @@ import { useSafeRouter } from "../../hooks/use-safe-router";
 
 const Profile = () => {
   const router = useSafeRouter();
-  // Ganti ke true/false untuk testing UI
-  const isLoggedIn = true;
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [modalHowVisible, setModalHowVisible] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -37,25 +37,6 @@ const Profile = () => {
         </View>
 
         {isLoggedIn ? <AuthenticatedUI /> : <GuestUI />}
-
-        {/* --- PANDUAN --- */}
-        {isLoggedIn && (
-          <View style={styles.promoCard}>
-            <View style={styles.promoShadow} />
-            <View style={styles.promoBody}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.promoTitle}>Cara Kerja Brum</Text>
-                <Text style={styles.promoSub}>
-                  Pelajari cara sewa, ambil unit, dan aturan berkendara di
-                  Jayapura.
-                </Text>
-              </View>
-              <View style={styles.promoIconBtn}>
-                <QuestionMarkCircleIcon size={20} color="black" />
-              </View>
-            </View>
-          </View>
-        )}
 
         {/* --- QUICK SETTINGS GRID --- */}
         {isLoggedIn && (
@@ -106,7 +87,7 @@ const Profile = () => {
   );
 };
 
-// --- SUB-COMPONENT: GUEST UI (RE-ADDED) ---
+// --- SUB-COMPONENT: GUEST UI ---
 const GuestUI = () => (
   <View style={styles.guestContainer}>
     <View style={styles.guestCard}>
@@ -231,6 +212,46 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 
+  // PROMO CARD (REPAIRED)
+  promoWrapper: {
+    marginBottom: 25,
+    width: "100%",
+  },
+  promoShadow: {
+    position: "absolute",
+    top: 4,
+    left: 4,
+    right: -4,
+    bottom: -4,
+    backgroundColor: "black",
+    borderRadius: 16,
+  },
+  promoBody: {
+    flex: 1,
+    backgroundColor: "#C7D2FE",
+    borderWidth: 2,
+    borderColor: "black",
+    borderRadius: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 15,
+  },
+  promoTitle: { fontFamily: Fonts.bold, fontSize: 16, color: "black" },
+  promoSub: {
+    fontFamily: Fonts.regular,
+    fontSize: 11,
+    color: "black",
+    opacity: 0.7,
+  },
+  promoIconBtn: {
+    backgroundColor: "white",
+    padding: 10,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "black",
+    marginLeft: 5,
+  },
+
   // GUEST UI STYLES
   guestContainer: { marginBottom: 30 },
   guestCard: { height: 320, position: "relative" },
@@ -264,43 +285,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   loginBtn: { width: "100%" },
-
-  // PROMO CARD
-  promoCard: { height: 90, marginBottom: 25, position: "relative" },
-  promoShadow: {
-    position: "absolute",
-    top: 4,
-    left: 4,
-    right: -4,
-    bottom: -4,
-    backgroundColor: "black",
-    borderRadius: 16,
-  },
-  promoBody: {
-    flex: 1,
-    backgroundColor: "#C7D2FE", // Warna Indigo Muda (Lebih kalem tapi tetap Brutalist)
-    borderWidth: 2,
-    borderColor: "black",
-    borderRadius: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 15,
-  },
-  promoTitle: { fontFamily: Fonts.bold, fontSize: 16, color: "black" }, // Ukuran dikecilkan dikit
-  promoSub: {
-    fontFamily: Fonts.regular,
-    fontSize: 11,
-    color: "black",
-    opacity: 0.7,
-  },
-  promoIconBtn: {
-    backgroundColor: "white",
-    padding: 10,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: "black",
-    marginLeft: 5,
-  },
 
   // GRID SETTINGS
   gridContainer: { flexDirection: "row", gap: 15, marginBottom: 25 },

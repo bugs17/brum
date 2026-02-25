@@ -20,7 +20,7 @@ const LoginModal = ({ isVisible, onClose, onLoginSuccess }) => {
   return (
     <Modal
       visible={isVisible}
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       onRequestClose={() => onClose()}
     >

@@ -1,25 +1,37 @@
+import { useState } from "react";
 import {
-  Dimensions,
-  Image,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
-import { BellIcon, MapPinIcon } from "react-native-heroicons/outline";
+import { MapPinIcon } from "react-native-heroicons/outline";
 import { SafeAreaView } from "react-native-safe-area-context";
+import HowItWorksBanner from "../../components/how-it-works-banner";
+import HowItWorksModal from "../../components/modal-how-it-works";
 import BrumCategoryCard from "../../components/ui/category-button";
-import BrumHeroBanner from "../../components/ui/hero-baner";
 import BrumSearchTrigger from "../../components/ui/search-button";
 import { Fonts } from "../../constants/fonts";
 
-const { width } = Dimensions.get("window");
+import { Image } from "expo-image";
+import { MotiView } from "moti";
+import Cat from "../../assets/images/cat.png";
+import PulseBadge from "../../components/ui/pulse-badge";
 
 const HomeScreen = () => {
+  const [modalHowVisible, setModalHowVisible] = useState(false);
+  const hasNotification = false;
+
   return (
     <SafeAreaView style={styles.container}>
+      {/* moadl how it works */}
+      <HowItWorksModal
+        isVisible={modalHowVisible}
+        onClose={() => setModalHowVisible(false)}
+      />
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -27,11 +39,36 @@ const HomeScreen = () => {
         {/* --- HEADER --- */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Halo, Pengendara! 🛵</Text>
+            <Text style={styles.greeting}>Halo, Pengendara!</Text>
             <Text style={styles.subGreeting}>Mau cari motor apa hari ini?</Text>
           </View>
-          <Pressable style={styles.iconButton}>
-            <BellIcon size={24} color="black" />
+
+          <Pressable style={styles.catBtnWrapper}>
+            {({ pressed }) => (
+              <View style={{ position: "relative", width: 48, height: 48 }}>
+                {/* Shadow tetap di belakang */}
+                <View style={styles.catShadow} />
+
+                <MotiView
+                  animate={{
+                    translateX: pressed ? 3 : 0,
+                    translateY: pressed ? 3 : 0,
+                  }}
+                  transition={{ type: "timing", duration: 50 }}
+                  style={styles.catBody}
+                >
+                  <Image
+                    source={Cat}
+                    style={styles.catImage}
+                    contentFit="contain"
+                    transition={500}
+                  />
+
+                  {/* Gunakan PulseBadge komponenmu di sini */}
+                  {hasNotification && <PulseBadge />}
+                </MotiView>
+              </View>
+            )}
           </Pressable>
         </View>
 
@@ -40,8 +77,8 @@ const HomeScreen = () => {
           <BrumSearchTrigger onPress={() => {}} />
         </View>
 
-        {/* --- PROMO BANNER --- */}
-        <BrumHeroBanner isVerified={true} isLoggedIn={true} />
+        {/* --- How it works BANNER --- */}
+        <HowItWorksBanner setModalHowVisible={setModalHowVisible} />
 
         {/* --- CATEGORIES --- */}
         <View style={styles.sectionHeader}>
@@ -137,6 +174,44 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.medium, // Comfortaa
     color: "#666",
     marginTop: 4,
+  },
+  catBtnWrapper: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  catShadow: {
+    position: "absolute",
+    top: 3,
+    left: 3,
+    right: -3,
+    bottom: -3,
+    backgroundColor: "black",
+    borderRadius: 14,
+  },
+  catBody: {
+    flex: 1,
+    backgroundColor: "#dff940", // Warna kuning Brum yang ikonik
+    borderWidth: 2,
+    borderColor: "black",
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden", // Biar gambar tidak keluar border
+  },
+  catImage: {
+    width: "85%",
+    height: "85%",
+  },
+  notifBadge: {
+    position: "absolute",
+    top: 4,
+    right: 4,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#FF4444", // Merah notifikasi
+    borderWidth: 1.5,
+    borderColor: "black",
   },
   iconButton: {
     padding: 10,
