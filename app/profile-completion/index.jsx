@@ -1,28 +1,40 @@
+import { useLocalSearchParams } from "expo-router";
 import { MotiView } from "moti";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import {
-    CameraIcon,
-    ExclamationCircleIcon, // Pakai ini agar sama dengan modal
-    IdentificationIcon,
-    PhoneIcon,
-    UserIcon,
+  CameraIcon,
+  ChevronLeftIcon,
+  ExclamationCircleIcon, // Pakai ini agar sama dengan modal
+  IdentificationIcon,
+  PhoneIcon,
+  UserIcon,
 } from "react-native-heroicons/solid";
 import { SafeAreaView } from "react-native-safe-area-context";
+import LoadingOverlay from "../../components/loading-overlay";
 import { Fonts } from "../../constants/fonts";
+import { useSafeRouter } from "../../hooks/use-safe-router";
 
-const ProfileCompletionScreen = ({ navigation }) => {
+const ProfileCompletionScreen = () => {
+  const router = useSafeRouter();
+  const params = useLocalSearchParams();
+  const isEditMode = params.mode === "edit";
   const [ktpPhoto, setKtpPhoto] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => setIsLoading(false), 2000);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -36,10 +48,30 @@ const ProfileCompletionScreen = ({ navigation }) => {
         >
           {/* Header Title */}
           <View style={styles.headerSection}>
-            <Text style={styles.mainTitle}>LENGKAPI PROFIL</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 15,
+                marginBottom: 15,
+              }}
+            >
+              {/* Button Back hanya muncul saat isEditMode = true */}
+              {isEditMode && (
+                <Pressable onPress={() => router.back()} style={styles.iconBtn}>
+                  <ChevronLeftIcon size={24} color="black" />
+                </Pressable>
+              )}
+
+              <Text style={styles.mainTitle}>
+                {isEditMode ? "UPDATE PROFIL" : "LENGKAPI PROFIL"}
+              </Text>
+            </View>
+
             <Text style={styles.subTitle}>
-              Satu langkah terakhir! Ambil foto KTP kamu untuk proses verifikasi
-              instan.
+              {isEditMode
+                ? "Pastikan data diri kamu tetap akurat agar proses sewa tetap lancar."
+                : "Satu langkah terakhir! Ambil foto KTP kamu untuk proses verifikasi instan."}
             </Text>
           </View>
 
@@ -159,9 +191,14 @@ const ProfileCompletionScreen = ({ navigation }) => {
                       translateY: pressed ? 4 : 0,
                     }}
                     transition={{ type: "timing", duration: 50 }}
-                    style={styles.btnBody}
+                    style={[
+                      styles.btnBody,
+                      isEditMode && { backgroundColor: "#C7D2FE" }, // Opsional: bedakan warna tombol saat edit
+                    ]}
                   >
-                    <Text style={styles.btnText}>SIMPAN & LANJUT SEWA</Text>
+                    <Text style={styles.btnText}>
+                      {isEditMode ? "SIMPAN PERUBAHAN" : "SIMPAN & LANJUT SEWA"}
+                    </Text>
                   </MotiView>
                 </View>
               )}
@@ -169,16 +206,21 @@ const ProfileCompletionScreen = ({ navigation }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <LoadingOverlay visible={isLoading} />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  iconBtn: {
+    padding: 8,
+  },
   container: { flex: 1, backgroundColor: "#FDFDFD" },
   scrollContent: { padding: 25 },
   headerSection: { marginBottom: 30 },
   mainTitle: {
-    fontFamily: Fonts.semibold,
+    fontFamily: Fonts.bold,
     fontSize: 26,
     color: "black",
     marginBottom: 8,

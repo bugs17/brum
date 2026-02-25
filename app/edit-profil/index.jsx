@@ -1,22 +1,25 @@
 import { MotiView } from "moti";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
-    BanknotesIcon,
-    ChevronLeftIcon,
-    ChevronRightIcon,
-    IdentificationIcon,
-    ShieldCheckIcon,
-    UserCircleIcon,
+  BanknotesIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  IdentificationIcon,
+  ShieldCheckIcon,
+  UserCircleIcon,
 } from "react-native-heroicons/solid";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Fonts } from "../../constants/fonts";
+import { useSafeRouter } from "../../hooks/use-safe-router";
 
-const EditProfileHub = ({ navigation }) => {
+const EditProfileHub = () => {
+  const router = useSafeRouter();
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Custom Header */}
       <View style={styles.header}>
-        <Pressable onPress={() => {}} style={styles.iconBtn}>
+        <Pressable onPress={() => router.back()} style={styles.iconBtn}>
           <ChevronLeftIcon size={24} color="black" />
         </Pressable>
         <Text style={styles.headerTitle}>Edit Profil</Text>
@@ -34,6 +37,10 @@ const EditProfileHub = ({ navigation }) => {
           color="#BAE6FD" // Blue
           onPress={() => {
             /* Navigasi ke ProfileCompletionScreen dengan mode edit */
+            router.push({
+              pathname: "profile-completion",
+              params: { mode: "edit", userId: "123" }, // Mengirim mode edit
+            });
           }}
         />
 
