@@ -45,6 +45,14 @@ export default function RootLayout() {
         />
         <Stack.Screen name="payment" options={{ headerShown: false }} />
         <Stack.Screen name="edit-profil" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="dokumen-berkendara"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="setting-rekening"
+          options={{ headerShown: false }}
+        />
       </Stack>
     </>
   );

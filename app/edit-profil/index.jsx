@@ -50,7 +50,7 @@ const EditProfileHub = () => {
           icon={<ShieldCheckIcon size={24} color="black" />}
           status="missing"
           color="#BBF7D0" // Green
-          onPress={() => {}}
+          onPress={() => router.push("dokumen-berkendara")}
         />
 
         {/* Section 2: Finansial */}
@@ -64,6 +64,7 @@ const EditProfileHub = () => {
           color="#FEF08A" // Yellow
           onPress={() => {
             /* Navigasi ke Screen Atur Rekening */
+            router.push("setting-rekening");
           }}
         />
 
