@@ -1,5 +1,6 @@
+import { useTabBarStore } from "@/store/tab-bar-store";
 import { AnimatePresence, MotiView } from "moti";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dimensions,
   Pressable,
@@ -27,6 +28,16 @@ const { width, height } = Dimensions.get("window");
 const DiscoveryScreen = () => {
   const [activeTab, setActiveTab] = useState("list"); // 'list' atau 'map'
   const router = useSafeRouter();
+  const { setHideTabBar, resetTabBar } = useTabBarStore();
+
+  useEffect(() => {
+    if (activeTab === "map") {
+      setHideTabBar(true);
+    } else {
+      resetTabBar();
+    }
+    return () => resetTabBar();
+  }, [activeTab]);
 
   return (
     <SafeAreaView style={styles.container}>

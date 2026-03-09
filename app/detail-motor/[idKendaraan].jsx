@@ -1,7 +1,14 @@
-import { useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { MotiView } from "moti";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import {
   BoltIcon,
   ChevronLeftIcon,
@@ -16,10 +23,12 @@ import LoginModal from "../../components/modal-login";
 import ModalMapsLokasiUnit from "../../components/modal-maps-lokasi-unit";
 import WishlistButton from "../../components/ui/wish-list-icon";
 import { Fonts } from "../../constants/fonts";
+import { useSafeRouter } from "../../hooks/use-safe-router";
 
-const MotorDetailScreen = ({ navigation }) => {
+const MotorDetailScreen = () => {
+  const { idKendaraan } = useLocalSearchParams();
   const insets = useSafeAreaInsets();
-  const router = useRouter();
+  const router = useSafeRouter();
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoginModalVisible, setLoginModalVisible] = useState(false);
@@ -27,6 +36,15 @@ const MotorDetailScreen = ({ navigation }) => {
 
   // Fitur Baru: State untuk Modal Map
   const [isMapModalVisible, setMapModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false); // <--- Tambahkan ini
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    // Simulasi fetch data
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  };
 
   const handleBookingPress = () => {
     if (!isLoggedIn) {
@@ -40,6 +58,9 @@ const MotorDetailScreen = ({ navigation }) => {
     setConfigModalVisible(false);
     router.push("/payment");
   };
+
+  // test print params
+  console.log(idKendaraan);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -55,6 +76,17 @@ const MotorDetailScreen = ({ navigation }) => {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        overScrollMode="never"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            // Styling agar sesuai dengan tema Brum
+            colors={["#DFF940", "black"]} // Warna spinner di Android
+            tintColor="#DFF940" // Warna spinner di iOS
+            progressBackgroundColor="black" // Background spinner (opsional, biar makin brutalist)
+          />
+        }
       >
         {/* --- IMAGE HERO --- */}
         <View style={styles.imageContainer}>
@@ -112,19 +144,36 @@ const MotorDetailScreen = ({ navigation }) => {
         </View>
 
         {/* --- PENYEDIA / OWNER --- */}
-        <View style={styles.ownerCard}>
-          <View style={styles.ownerShadow} />
-          <View style={styles.ownerBody}>
-            <View style={styles.avatar} />
-            <View style={{ flex: 1, marginLeft: 12 }}>
-              <Text style={styles.ownerLabel}>Penyedia Unit</Text>
-              <Text style={styles.ownerName}>Brum Rental Sentani</Text>
+        <Pressable
+          onPress={() => router.push(`/profil-rental/${123}`)} // Ganti dengan logic navigasi diler
+          style={styles.ownerCard}
+        >
+          {({ pressed }) => (
+            <View style={{ position: "relative" }}>
+              {/* Bayangan tetap statis di belakang */}
+              <View style={styles.ownerShadow} />
+
+              {/* Body kartu yang bergerak saat ditekan */}
+              <MotiView
+                animate={{
+                  translateX: pressed ? 4 : 0,
+                  translateY: pressed ? 4 : 0,
+                }}
+                transition={{ type: "timing", duration: 50 }}
+                style={styles.ownerBody}
+              >
+                <View style={styles.avatar} />
+                <View style={{ flex: 1, marginLeft: 12 }}>
+                  <Text style={styles.ownerLabel}>Penyedia Unit</Text>
+                  <Text style={styles.ownerName}>Brum Rental Sentani</Text>
+                </View>
+                <View style={styles.verifiedBadge}>
+                  <BoltIcon size={14} color="black" />
+                </View>
+              </MotiView>
             </View>
-            <View style={styles.verifiedBadge}>
-              <BoltIcon size={14} color="black" />
-            </View>
-          </View>
-        </View>
+          )}
+        </Pressable>
 
         <View style={{ height: 120 }} />
       </ScrollView>
@@ -286,7 +335,10 @@ const styles = StyleSheet.create({
   specValue: { fontFamily: Fonts.semibold, fontSize: 13, color: "#000" },
 
   // OWNER CARD
-  ownerCard: { height: 80, position: "relative", marginBottom: 10 },
+  ownerCard: {
+    marginBottom: 20,
+    width: "100%",
+  },
   ownerShadow: {
     position: "absolute",
     top: 4,
@@ -297,14 +349,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   ownerBody: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 15,
     backgroundColor: "white",
     borderWidth: 2,
     borderColor: "black",
     borderRadius: 12,
+    padding: 12,
   },
   avatar: {
     width: 45,

@@ -3,7 +3,6 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-
 import {
   HomeIcon as HomeOutline,
   MapPinIcon as MapPinIconOutline,
@@ -16,15 +15,19 @@ import {
   TicketIcon as TicketSolid,
   UserIcon as UserSolid,
 } from "react-native-heroicons/solid";
+import { useTabBarStore } from "../../store/tab-bar-store";
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const TAB_BAR_HEIGHT = 65;
+  const { hideTabBar } = useTabBarStore();
 
   // --- LOGIKA AUTH & ORDER ---
   // Nantinya ini diambil dari Global State (Zustand/Context/Supabase)
   const isAuthenticated = true; // Ganti dengan logic auth asli
   const hasActiveOrder = true; // Ganti dengan logic cek database order
+
+  // shared value untuk animasi
 
   return (
     <Tabs
@@ -42,21 +45,23 @@ export default function TabLayout() {
           paddingVertical: 0,
           marginVertical: 0,
         },
-        tabBarStyle: {
-          position: "absolute",
-          bottom: insets.bottom + 20,
-          marginHorizontal: 50,
-          backgroundColor: "#FFFFFF",
-          height: TAB_BAR_HEIGHT,
-          borderRadius: 20,
-          borderWidth: 2,
-          borderColor: "#000",
-          elevation: 0,
-          shadowOpacity: 0,
-          borderTopWidth: 2,
-          paddingTop: 0,
-          paddingBottom: 0,
-        },
+        tabBarStyle: hideTabBar
+          ? { display: "none" }
+          : {
+              position: "absolute",
+              bottom: insets.bottom + 20,
+              marginHorizontal: 50,
+              backgroundColor: "#FFFFFF",
+              height: TAB_BAR_HEIGHT,
+              borderRadius: 20,
+              borderWidth: 2,
+              borderColor: "#000",
+              elevation: 0,
+              shadowOpacity: 0,
+              borderTopWidth: 2,
+              paddingTop: 0,
+              paddingBottom: 0,
+            },
       }}
     >
       <Tabs.Screen

@@ -1,8 +1,25 @@
+import { useEffect, useState } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { MapPinIcon, XMarkIcon } from "react-native-heroicons/solid";
 import { Fonts } from "../constants/fonts";
 
-const ModalMapsLokasiUnit = ({ isMapModalVisible, setMapModalVisible }) => {
+const ModalMapsLokasiUnit = ({
+  isMapModalVisible,
+  setMapModalVisible,
+  fromDilerProfile = false,
+}) => {
+  const [title, setTitle] = useState("Lokasi Unit");
+  const [deskripsi, setDeskripsi] = useState(
+    "Motor berada di diler. Kamu bisa ambil langsung atau minta antar (biaya tambahan).",
+  );
+
+  useEffect(() => {
+    if (fromDilerProfile) {
+      setTitle("Lokasi Diler");
+      setDeskripsi("Jarak dari lokasimu ke lokasi diler.");
+    }
+  }, []);
+
   return (
     <Modal
       visible={isMapModalVisible}
@@ -15,7 +32,7 @@ const ModalMapsLokasiUnit = ({ isMapModalVisible, setMapModalVisible }) => {
           <View style={styles.modalShadowEffect} />
           <View style={styles.mapModalBody}>
             <View style={styles.mapHeader}>
-              <Text style={styles.mapTitle}>Lokasi Unit</Text>
+              <Text style={styles.mapTitle}>{title}</Text>
               <Pressable
                 onPress={() => setMapModalVisible(false)}
                 style={styles.closeMapBtn}
@@ -32,10 +49,7 @@ const ModalMapsLokasiUnit = ({ isMapModalVisible, setMapModalVisible }) => {
             </View>
 
             <View style={styles.mapFooter}>
-              <Text style={styles.mapFooterText}>
-                Motor berada di diler. Kamu bisa ambil langsung atau minta antar
-                (biaya tambahan).
-              </Text>
+              <Text style={styles.mapFooterText}>{deskripsi}</Text>
             </View>
           </View>
         </View>
@@ -49,7 +63,7 @@ export default ModalMapsLokasiUnit;
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
+    backgroundColor: "rgba(0,0,0,0.9)",
     justifyContent: "center",
     padding: 20,
   },

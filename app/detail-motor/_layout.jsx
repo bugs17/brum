@@ -3,7 +3,7 @@ import { Stack } from "expo-router";
 const _layoutDetailMotor = () => {
   return (
     <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="[idKendaraan]" options={{ headerShown: false }} />
     </Stack>
   );
 };
