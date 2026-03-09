@@ -56,6 +56,10 @@ export default function RootLayout() {
         <Stack.Screen name="edit-username" options={{ headerShown: false }} />
         <Stack.Screen name="ulasan" options={{ headerShown: false }} />
         <Stack.Screen name="profil-rental" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="navigasi-to-diler"
+          options={{ headerShown: false }}
+        />
       </Stack>
     </>
   );

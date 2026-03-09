@@ -1,9 +1,9 @@
-import { useRouter } from "expo-router";
 import { useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import {
   CalendarDaysIcon,
   ChatBubbleLeftRightIcon,
+  MapIcon,
   MapPinIcon,
   QrCodeIcon,
 } from "react-native-heroicons/solid";
@@ -13,9 +13,10 @@ import BookingDetailModal from "../../components/ready-booking-modal";
 import CountdownTimer from "../../components/ui/count-down-timer";
 import PulseBadge from "../../components/ui/pulse-badge";
 import { Fonts } from "../../constants/fonts";
+import { useSafeRouter } from "../../hooks/use-safe-router";
 
 const ActivityScreen = () => {
-  const router = useRouter();
+  const router = useSafeRouter();
   const [selectedBooking, setSelectedBooking] = useState(null);
 
   const dummyBookings = [
@@ -43,9 +44,12 @@ const ActivityScreen = () => {
   ];
 
   const handleChatPress = (id) => {
-    // Arahkan ke screen chat dengan ID booking/penyedia
     console.log("Go to chat for booking:", id);
     // router.push("/chat");
+  };
+
+  const handleNavPress = (item) => {
+    router.push("/navigasi-to-diler/id-diler-123");
   };
 
   const renderItem = ({ item }) => {
@@ -96,10 +100,19 @@ const ActivityScreen = () => {
                 </Pressable>
               </View>
             ) : (
-              // Tampilan saat Motor Belum Diambil
-              <View style={styles.qrTrigger}>
-                <QrCodeIcon size={20} color="black" />
-                <Text style={styles.qrTriggerText}>TAP UNTUK QR PICKUP</Text>
+              // Tampilan saat Motor Belum Diambil (Ada Tombol Navigasi)
+              <View style={styles.pendingFooter}>
+                <View style={styles.qrTrigger}>
+                  <QrCodeIcon size={20} color="black" />
+                  <Text style={styles.qrTriggerText}>TAP UNTUK QR PICKUP</Text>
+                </View>
+
+                <Pressable
+                  onPress={() => handleNavPress(item)}
+                  style={styles.navBtn}
+                >
+                  <MapIcon size={20} color="black" />
+                </Pressable>
               </View>
             )}
           </View>
@@ -118,6 +131,7 @@ const ActivityScreen = () => {
         data={dummyBookings}
         contentContainerStyle={{ padding: 20 }}
         keyExtractor={(item) => item.id}
+        overScrollMode="never"
         renderItem={renderItem}
       />
 
@@ -191,7 +205,12 @@ const styles = StyleSheet.create({
     borderColor: "#CCC",
   },
 
-  // Gaya QR Pickup
+  // Gaya Pending Footer (QR + Maps)
+  pendingFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   qrTrigger: { flexDirection: "row", alignItems: "center", gap: 8 },
   qrTriggerText: { fontFamily: Fonts.semibold, fontSize: 12 },
 
@@ -217,13 +236,27 @@ const styles = StyleSheet.create({
   chatBtn: {
     width: 40,
     height: 40,
-    backgroundColor: "#DFF940", // Warna khas Brum
+    backgroundColor: "#DFF940",
     borderWidth: 2,
     borderColor: "black",
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
-    // Shadow kecil buat tombol chat
+    shadowColor: "#000",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+  },
+
+  navBtn: {
+    width: 40,
+    height: 40,
+    backgroundColor: "#BAE6FD", // Biru Sekunder Brum
+    borderWidth: 2,
+    borderColor: "black",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 1,

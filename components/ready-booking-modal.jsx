@@ -16,7 +16,7 @@ const BookingDetailModal = ({ isVisible, booking, onClose }) => {
       visible={isVisible}
       onRequestClose={() => onClose()}
       transparent
-      animationType="slide"
+      animationType="fade"
     >
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
@@ -40,6 +40,7 @@ const BookingDetailModal = ({ isVisible, booking, onClose }) => {
               showsVerticalScrollIndicator={false}
               style={styles.scrollView}
               contentContainerStyle={styles.scrollContent}
+              overScrollMode="never"
             >
               {/* --- INFO KENDARAAN --- */}
               <View style={styles.motorCard}>
@@ -119,7 +120,7 @@ const BookingDetailModal = ({ isVisible, booking, onClose }) => {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
+    backgroundColor: "rgba(0,0,0,0.9)",
     justifyContent: "center",
     padding: 25,
   },

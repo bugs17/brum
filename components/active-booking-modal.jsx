@@ -1,16 +1,16 @@
 import {
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import {
-    ClockIcon,
-    ExclamationTriangleIcon,
-    MapPinIcon,
-    XMarkIcon,
+  ClockIcon,
+  ExclamationTriangleIcon,
+  MapPinIcon,
+  XMarkIcon,
 } from "react-native-heroicons/solid";
 import { Fonts } from "../constants/fonts";
 
@@ -19,7 +19,7 @@ const ActiveBookingModal = ({ isVisible, booking, onClose }) => {
     <Modal
       visible={isVisible}
       transparent
-      animationType="slide"
+      animationType="fade"
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
@@ -109,7 +109,7 @@ const ActiveBookingModal = ({ isVisible, booking, onClose }) => {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
+    backgroundColor: "rgba(0,0,0,0.9)",
     justifyContent: "center",
     padding: 25,
   },
