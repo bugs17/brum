@@ -43,12 +43,11 @@ const ActivityScreen = () => {
     },
   ];
 
-  const handleChatPress = (id) => {
-    console.log("Go to chat for booking:", id);
-    // router.push("/chat");
+  const handleChatPress = () => {
+    router.push("/chat/id-transaksi-123");
   };
 
-  const handleNavPress = (item) => {
+  const handleNavPress = () => {
     router.push("/navigasi-to-diler/id-diler-123");
   };
 

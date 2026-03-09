@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import {
   ChatBubbleLeftRightIcon,
@@ -10,17 +10,22 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import PulseBadge from "../../components/ui/pulse-badge";
 import { Fonts } from "../../constants/fonts";
+import { useSafeRouter } from "../../hooks/use-safe-router";
 
 const NavigationMapScreen = () => {
-  const router = useRouter();
+  const router = useSafeRouter();
   const { dealerName, lat, lng, distance = "0.0" } = useLocalSearchParams();
   const insets = useSafeAreaInsets();
-  const { idBooking } = useLocalSearchParams();
+
+  // State dummy untuk simulasi chat yang belum dibaca
+  // Di produksi, ini bisa diambil dari state global atau context
+  const hasUnreadChat = false;
 
   const handleChatPress = () => {
-    console.log("Membuka chat dengan diler...");
-    // router.push("/chat");
+    // Navigasi ke room chat berdasarkan ID Transaksi
+    router.push("/chat/123");
   };
 
   return (
@@ -64,9 +69,10 @@ const NavigationMapScreen = () => {
               </View>
             </View>
 
-            {/* Tombol Chat (Sudah diizinkan karena proses pickup) */}
+            {/* Tombol Chat dengan PulseBadge */}
             <Pressable onPress={handleChatPress} style={styles.chatBtn}>
               <ChatBubbleLeftRightIcon size={24} color="black" />
+              {hasUnreadChat && <PulseBadge />}
             </Pressable>
           </View>
 
@@ -182,6 +188,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 3, height: 3 },
     shadowOpacity: 1,
     shadowRadius: 0,
+    // Penting agar PulseBadge yang absolute bisa nempel dengan benar
+    position: "relative",
   },
 
   distanceRow: {
