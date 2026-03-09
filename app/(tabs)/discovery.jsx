@@ -96,6 +96,7 @@ const DiscoveryScreen = () => {
               <ScrollView
                 contentContainerStyle={styles.scrollList}
                 showsVerticalScrollIndicator={false}
+                overScrollMode="never"
               >
                 <Text style={styles.resultsText}>
                   Ditemukan 12 Motor di sekitarmu

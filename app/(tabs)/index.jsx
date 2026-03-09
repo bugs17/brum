@@ -5,7 +5,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { MapPinIcon } from "react-native-heroicons/outline";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,10 +19,12 @@ import { Image } from "expo-image";
 import { MotiView } from "moti";
 import Cat from "../../assets/images/cat.png";
 import PulseBadge from "../../components/ui/pulse-badge";
+import { useSafeRouter } from "../../hooks/use-safe-router";
 
 const HomeScreen = () => {
   const [modalHowVisible, setModalHowVisible] = useState(false);
   const hasNotification = false;
+  const router = useSafeRouter();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -35,6 +37,7 @@ const HomeScreen = () => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        overScrollMode="never"
       >
         {/* --- HEADER --- */}
         <View style={styles.header}>
@@ -74,7 +77,7 @@ const HomeScreen = () => {
 
         {/* --- SEARCH BAR --- */}
         <View style={{ paddingHorizontal: 20 }}>
-          <BrumSearchTrigger onPress={() => {}} />
+          <BrumSearchTrigger onPress={() => router.push("/(tabs)/discovery")} />
         </View>
 
         {/* --- How it works BANNER --- */}
@@ -89,12 +92,13 @@ const HomeScreen = () => {
           showsHorizontalScrollIndicator={false}
           style={styles.catScroll}
           contentContainerStyle={{ paddingHorizontal: 20 }}
+          overScrollMode="never"
         >
           {["Sport", "Matic", "Bebek", "Listrik"].map((item, index) => (
             <BrumCategoryCard
               key={index}
               title={item}
-              onPress={() => console.log(item)}
+              onPress={() => router.push("/(tabs)/discovery")}
             />
           ))}
         </ScrollView>
