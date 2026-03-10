@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
 import { MotiView } from "moti";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FlatList,
   Image,
@@ -27,17 +27,25 @@ const DealerProfileScreen = () => {
   const router = useSafeRouter();
   const [isMapModalVisible, setMapModalVisible] = useState(false);
   const { idRental } = useLocalSearchParams();
-  const [refreshing, setRefreshing] = useState(false); // <--- Tambahkan ini
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Simulasi Load Data agar Skeleton terlihat
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const onRefresh = () => {
     setRefreshing(true);
-    // Di sini nanti lo panggil fungsi fetch data dari database
     setTimeout(() => {
-      setRefreshing(false); // Matikan loading setelah data selesai di-fetch
+      setRefreshing(false);
     }, 2000);
   };
 
-  // Dummy Data - Nanti bisa lo lempar lewat useLocalSearchParams()
   const dealerInfo = {
     name: "Brum Rental Sentani",
     rating: 4.8,
@@ -45,7 +53,6 @@ const DealerProfileScreen = () => {
     address: "Jl. Raya Sentani No. 12, Jayapura",
     isVerified: true,
     avatar: "https://via.placeholder.com/100",
-    coords: { lat: -2.5916, lng: 140.5121 }, // Lokasi Sentani
   };
 
   const dealerInventory = [
@@ -79,17 +86,12 @@ const DealerProfileScreen = () => {
     },
   ];
 
-  console.log(idRental);
-
   const renderHeader = () => (
     <View style={styles.profileHeader}>
-      {/* Decorative Cover */}
       <View style={styles.coverRect} />
-
       <View style={styles.profileInfoCard}>
         <View style={styles.cardShadow} />
         <View style={styles.cardBody}>
-          {/* Avatar Section */}
           <View style={styles.avatarContainer}>
             <View style={styles.avatarShadow} />
             <View style={styles.avatarBody}>
@@ -100,7 +102,6 @@ const DealerProfileScreen = () => {
             </View>
           </View>
 
-          {/* Identity Section */}
           <View style={styles.mainInfo}>
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
@@ -110,17 +111,12 @@ const DealerProfileScreen = () => {
                 <CheckBadgeIcon size={20} color="#3B82F6" />
               )}
             </View>
-
-            <Pressable
-              onPress={() => setMapModalVisible(true)}
-              style={styles.locationTag}
-            >
-              <MapPinIcon size={14} color="#3B82F6" />
+            <View style={styles.locationTag}>
+              <MapPinIcon size={14} color="#0369A1" />
               <Text style={styles.addressText}>{dealerInfo.address}</Text>
-            </Pressable>
+            </View>
           </View>
 
-          {/* Stats & Actions Row */}
           <View style={styles.statsRow}>
             <View style={styles.statGroup}>
               <View style={styles.statItem}>
@@ -134,99 +130,130 @@ const DealerProfileScreen = () => {
                 <Text style={styles.statLabel}>Sewa</Text>
               </View>
             </View>
-
-            <View style={styles.actionColumn}>
-              <Pressable
-                onPress={() => setMapModalVisible(true)}
-                style={styles.btnMaps}
-              >
-                <MapIcon size={18} color="black" />
-                <Text style={styles.btnText}>Maps</Text>
-              </Pressable>
-            </View>
           </View>
         </View>
       </View>
-
       <Text style={styles.sectionTitle}>Armada Tersedia</Text>
+    </View>
+  );
+
+  const renderSkeletonItem = () => (
+    <View style={styles.motorCardContainer}>
+      <View style={{ position: "relative" }}>
+        <View style={[styles.motorShadow, { backgroundColor: "#EEE" }]} />
+        <MotiView
+          from={{ opacity: 0.5 }}
+          animate={{ opacity: 1 }}
+          transition={{ type: "timing", duration: 1000, loop: true }}
+          style={[styles.motorBody, { borderColor: "#EEE" }]}
+        >
+          <View
+            style={[
+              styles.motorImgPlaceholder,
+              { backgroundColor: "#E5E5E5", borderColor: "#EEE" },
+            ]}
+          />
+          <View style={{ flex: 1, marginLeft: 15 }}>
+            <View
+              style={[
+                styles.skeletonBar,
+                { width: "70%", height: 16, marginBottom: 8 },
+              ]}
+            />
+            <View
+              style={[
+                styles.skeletonBar,
+                { width: "40%", height: 12, marginBottom: 10 },
+              ]}
+            />
+            <View style={[styles.skeletonBar, { width: "50%", height: 15 }]} />
+          </View>
+          <View
+            style={[
+              styles.arrowIndicator,
+              { backgroundColor: "#F9F9F9", borderColor: "#EEE" },
+            ]}
+          />
+        </MotiView>
+      </View>
     </View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Top Navigation */}
+      {/* Top Navigation - Maps di pojok kanan agar statis */}
       <View style={styles.topBar}>
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
           <ChevronLeftIcon size={24} color="black" />
         </Pressable>
         <Text style={styles.topBarTitle}>Profil Diler</Text>
-        <View style={{ width: 40 }} />
+        <Pressable
+          onPress={() => setMapModalVisible(true)}
+          style={styles.mapHeaderBtn}
+        >
+          <MapIcon size={22} color="black" />
+        </Pressable>
       </View>
 
       <FlatList
-        data={dealerInventory}
+        data={isLoading ? [1, 2, 3, 4] : dealerInventory}
         ListHeaderComponent={renderHeader}
         showsVerticalScrollIndicator={false}
         overScrollMode="never"
         contentContainerStyle={{ paddingBottom: 40 }}
-        keyExtractor={(item) => item.id}
-        refreshing={refreshing}
-        onRefresh={onRefresh}
+        keyExtractor={(item, index) => (isLoading ? `skel-${index}` : item.id)}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={["#DFF940"]} // Warna panah/garis loading (Neon Brum)
-            tintColor="#DFF940" // Warna spinner di iOS
-            progressBackgroundColor="black" // Background lingkaran spinner (Biar sangar!)
+            colors={["#DFF940"]}
+            tintColor="#DFF940"
+            progressBackgroundColor="black"
           />
         }
-        renderItem={({ item }) => (
-          <Pressable
-            onPress={() => router.push(`/detail-motor/yamaha-nmax`)}
-            style={styles.motorCardContainer}
-          >
-            {({ pressed }) => (
-              <View style={{ position: "relative" }}>
-                {/* Bayangan tetap diam di belakang */}
-                <View style={styles.motorShadow} />
-
-                {/* Body kartu yang bergeser saat ditekan */}
-                <MotiView
-                  animate={{
-                    translateX: pressed ? 4 : 0,
-                    translateY: pressed ? 4 : 0,
-                  }}
-                  transition={{ type: "timing", duration: 50 }}
-                  style={styles.motorBody}
-                >
-                  {/* Image Placeholder */}
-                  <View style={styles.motorImgPlaceholder} />
-
-                  <View style={{ flex: 1, marginLeft: 15 }}>
-                    <Text style={styles.motorName}>{item.name}</Text>
-                    <Text style={styles.motorSub}>
-                      {item.type} • {item.year}
-                    </Text>
-                    <View style={styles.priceContainer}>
-                      <Text style={styles.priceText}>Rp {item.price}</Text>
-                      <Text style={styles.dayText}>/hari</Text>
+        renderItem={({ item }) =>
+          isLoading ? (
+            renderSkeletonItem()
+          ) : (
+            <Pressable
+              onPress={() => router.push(`/detail-motor/yamaha-nmax`)}
+              style={styles.motorCardContainer}
+            >
+              {({ pressed }) => (
+                <View style={{ position: "relative" }}>
+                  <View style={styles.motorShadow} />
+                  <MotiView
+                    animate={{
+                      translateX: pressed ? 4 : 0,
+                      translateY: pressed ? 4 : 0,
+                    }}
+                    transition={{ type: "timing", duration: 50 }}
+                    style={styles.motorBody}
+                  >
+                    <View style={styles.motorImgPlaceholder} />
+                    <View style={{ flex: 1, marginLeft: 15 }}>
+                      <Text style={styles.motorName}>{item.name}</Text>
+                      <Text style={styles.motorSub}>
+                        {item.type} • {item.year}
+                      </Text>
+                      <View style={styles.priceContainer}>
+                        <Text style={styles.priceText}>Rp {item.price}</Text>
+                        <Text style={styles.dayText}>/hari</Text>
+                      </View>
                     </View>
-                  </View>
-
-                  {/* Icon Panah Kecil sebagai petunjuk (Affordance) */}
-                  <View style={styles.arrowIndicator}>
-                    <ArrowLeftIcon
-                      size={16}
-                      color="black"
-                      style={{ transform: [{ rotate: "180deg" }] }}
-                    />
-                  </View>
-                </MotiView>
-              </View>
-            )}
-          </Pressable>
-        )}
+                    <View style={styles.arrowIndicator}>
+                      <ArrowLeftIcon
+                        size={16}
+                        color="black"
+                        style={{ transform: [{ rotate: "180deg" }] }}
+                      />
+                    </View>
+                  </MotiView>
+                </View>
+              )}
+            </Pressable>
+          )
+        }
       />
 
       <ModalMapsLokasiUnit
@@ -240,25 +267,29 @@ const DealerProfileScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FDFDFD" },
-
-  // Navigation
   topBar: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#EEE",
   },
   backBtn: {
     width: 40,
     height: 40,
     justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "white",
+    alignItems: "flex-start",
+  },
+  mapHeaderBtn: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "flex-end",
   },
   topBarTitle: { fontFamily: Fonts.semibold, fontSize: 16 },
 
-  // Header & Info Card
   profileHeader: { padding: 20 },
   coverRect: {
     height: 90,
@@ -268,7 +299,6 @@ const styles = StyleSheet.create({
     borderColor: "black",
     marginBottom: -45,
   },
-
   profileInfoCard: { position: "relative", marginBottom: 30 },
   cardShadow: {
     position: "absolute",
@@ -286,7 +316,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 15,
   },
-
   avatarContainer: {
     width: 80,
     height: 80,
@@ -312,7 +341,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   avatarImg: { width: "100%", height: "100%" },
-
   mainInfo: { alignItems: "center", marginTop: 12, marginBottom: 20 },
   dealerName: { fontFamily: Fonts.semibold, fontSize: 20 },
   locationTag: {
@@ -333,8 +361,6 @@ const styles = StyleSheet.create({
     color: "#0369A1",
     textDecorationLine: "underline",
   },
-
-  // Stats & Action Layout
   statsRow: {
     flexDirection: "row",
     borderTopWidth: 1,
@@ -348,48 +374,8 @@ const styles = StyleSheet.create({
   statLabel: { fontFamily: Fonts.regular, fontSize: 10, color: "#999" },
   divider: { width: 1, height: 30, backgroundColor: "#EEE" },
 
-  actionColumn: { flex: 1, gap: 8, paddingLeft: 10 },
-  btnChat: {
-    flexDirection: "row",
-    height: 40,
-    backgroundColor: "#DFF940",
-    borderWidth: 2,
-    borderColor: "black",
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 2,
-  },
-  btnMaps: {
-    flexDirection: "row",
-    height: 40,
-    backgroundColor: "#BAE6FD",
-    borderWidth: 2,
-    borderColor: "black",
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 2,
-  },
-  btnText: { fontFamily: Fonts.semibold, fontSize: 12 },
-
-  // Inventory List
   sectionTitle: { fontFamily: Fonts.semibold, fontSize: 22, marginBottom: 15 },
-  motorCardContainer: {
-    marginHorizontal: 20, // Sesuaikan dengan padding screen
-    marginBottom: 22,
-    position: "relative",
-  },
+  motorCardContainer: { marginHorizontal: 20, marginBottom: 22 },
   motorShadow: {
     position: "absolute",
     top: 4,
@@ -408,25 +394,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 12,
   },
-  // Style baru untuk pengganti tombol "Lihat"
-  arrowIndicator: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: "#F3F4F6",
-    borderWidth: 1,
-    borderColor: "black",
-    justifyContent: "center",
-    alignItems: "center",
-    marginLeft: 10,
-  },
   motorImgPlaceholder: {
     width: 65,
     height: 65,
-    backgroundColor: "#F3F4F6",
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#DDD",
   },
   motorName: { fontFamily: Fonts.semibold, fontSize: 16 },
   motorSub: {
@@ -438,15 +410,20 @@ const styles = StyleSheet.create({
   priceContainer: { flexDirection: "row", alignItems: "baseline" },
   priceText: { fontFamily: Fonts.semibold, fontSize: 15, color: "black" },
   dayText: { fontFamily: Fonts.regular, fontSize: 11, color: "#666" },
-  checkBtn: {
-    backgroundColor: "white",
-    borderWidth: 2,
+  arrowIndicator: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: "#F3F4F6",
+    borderWidth: 1,
     borderColor: "black",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 10,
   },
-  checkBtnText: { fontFamily: Fonts.semibold, fontSize: 12 },
+
+  // Skeleton Specific Styles
+  skeletonBar: { backgroundColor: "#F0F0F0", borderRadius: 4 },
 });
 
 export default DealerProfileScreen;

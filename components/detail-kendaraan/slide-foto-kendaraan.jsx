@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { MotiView } from "moti";
+import { useEffect, useRef, useState } from "react";
 import { FlatList, Image, StyleSheet, View } from "react-native";
 
 const DUMMY_IMAGES = [
@@ -20,6 +21,19 @@ const SlideFotoKendaraan = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
 
+  // State untuk mengontrol skeleton secara global (Simulasi Fetching)
+  const [isDataLoading, setIsDataLoading] = useState(true);
+  // Tracking status loading real tiap gambar
+  const [imageLoaded, setImageLoaded] = useState({});
+
+  // Simulasi delay saat pertama kali layar dibuka
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsDataLoading(false);
+    }, 2000); // Tampilkan skeleton selama 2 detik
+    return () => clearTimeout(timer);
+  }, []);
+
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
     if (viewableItems.length > 0) {
       setActiveIndex(viewableItems[0].index);
@@ -30,12 +44,34 @@ const SlideFotoKendaraan = () => {
     itemVisiblePercentThreshold: 50,
   }).current;
 
+  const handleImageLoad = (id) => {
+    setImageLoaded((prev) => ({ ...prev, [id]: true }));
+  };
+
   const renderItem = ({ item }) => (
     <View style={{ width: containerWidth, height: 250 }}>
+      {/* SKELETON: Muncul jika data global masih loading ATAU image spesifik belum loaded */}
+      {(isDataLoading || !imageLoaded[item.id]) && (
+        <MotiView
+          from={{ opacity: 0.4 }}
+          animate={{ opacity: 1 }}
+          transition={{
+            type: "timing",
+            duration: 800,
+            loop: true,
+          }}
+          style={[
+            StyleSheet.absoluteFill,
+            { backgroundColor: "#E5E7EB", zIndex: 1 },
+          ]}
+        />
+      )}
+
       <Image
         source={{ uri: item.uri }}
         style={styles.image}
         resizeMode="cover"
+        onLoad={() => handleImageLoad(item.id)}
       />
     </View>
   );
@@ -55,11 +91,10 @@ const SlideFotoKendaraan = () => {
             horizontal
             pagingEnabled={true}
             showsHorizontalScrollIndicator={false}
-            // OPTIMASI KECEPATAN SCROLL
-            snapToInterval={containerWidth} // Kunci perpindahan tepat selebar gambar
+            snapToInterval={containerWidth}
             snapToAlignment="start"
-            decelerationRate="fast" // Menghilangkan efek melambat yang lama
-            disableIntervalMomentum={true} // Memastikan hanya bisa pindah 1 gambar per swipe
+            decelerationRate="fast"
+            disableIntervalMomentum={true}
             scrollEventThrottle={16}
             onViewableItemsChanged={onViewableItemsChanged}
             viewabilityConfig={viewabilityConfig}
@@ -121,6 +156,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignSelf: "center",
     gap: 8,
+    zIndex: 10,
   },
   dot: {
     height: 10,
