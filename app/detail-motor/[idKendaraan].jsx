@@ -18,6 +18,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import SlideFotoKendaraan from "../../components/detail-kendaraan/slide-foto-kendaraan";
 import BookingConfigModal from "../../components/modal-config-booking";
 import LoginModal from "../../components/modal-login";
 import ModalMapsLokasiUnit from "../../components/modal-maps-lokasi-unit";
@@ -89,14 +90,7 @@ const MotorDetailScreen = () => {
         }
       >
         {/* --- IMAGE HERO --- */}
-        <View style={styles.imageContainer}>
-          <View style={styles.imageShadow} />
-          <View style={styles.imageBody}>
-            <View style={styles.imgPlaceholder}>
-              <Text style={{ fontFamily: Fonts.semibold }}>IMAGE MOTOR</Text>
-            </View>
-          </View>
-        </View>
+        <SlideFotoKendaraan />
 
         {/* --- INFO UTAMA & MAP TRIGGER --- */}
         <View style={styles.infoWrapper}>
@@ -255,32 +249,6 @@ const styles = StyleSheet.create({
   headerTitle: { fontFamily: Fonts.semibold, fontSize: 16 },
   iconBtn: { padding: 8 },
   scrollContent: { padding: 20 },
-
-  // IMAGE HERO
-  imageContainer: { height: 250, width: "100%", marginBottom: 25 },
-  imageShadow: {
-    position: "absolute",
-    top: 4,
-    left: 4,
-    right: -4,
-    bottom: -4,
-    backgroundColor: "black",
-    borderRadius: 12,
-  },
-  imageBody: {
-    flex: 1,
-    backgroundColor: "white",
-    borderWidth: 2,
-    borderColor: "black",
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  imgPlaceholder: {
-    flex: 1,
-    backgroundColor: "#f0f0f0",
-    justifyContent: "center",
-    alignItems: "center",
-  },
 
   // INFO & LOCATION CARD
   infoWrapper: { marginBottom: 25 },

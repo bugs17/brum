@@ -1,6 +1,13 @@
 import { MotiView } from "moti";
-import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { MagnifyingGlassIcon } from "react-native-heroicons/outline";
 import MotorCardSkeleton from "../../components/skeleton/list-motor-skeleton";
 import MotorCardDiscovery, {
@@ -12,13 +19,28 @@ import { useSafeRouter } from "../../hooks/use-safe-router";
 const CariMotor = () => {
   const router = useSafeRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
+  // Fungsi untuk simulasi fetch data
+  const fetchData = (isInitial = true) => {
+    if (isInitial) setIsLoading(true);
+
+    // Simulasi delay fetch data dari Supabase/API
+    setTimeout(() => {
       setIsLoading(false);
+      setIsRefreshing(false);
     }, 2000);
-    return () => clearTimeout(timer);
+  };
+
+  useEffect(() => {
+    fetchData(true);
+  }, []);
+
+  // Fungsi Pull to Refresh
+  const onRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    fetchData(false); // Ambil data ulang tanpa mengaktifkan skeleton utama (opsional)
   }, []);
 
   const filteredMotors = DUMMY_MOTORS.filter((motor) =>
@@ -33,10 +55,7 @@ const CariMotor = () => {
       exit={{ opacity: 0, translateX: -20 }}
       style={{ flex: 1 }}
     >
-      {/* STIKY SEARCH BAR 
-          Diletakkan di luar FlatList agar tidak ikut ter-scroll.
-          PaddingHorizontal dipindahkan ke kontainer pembungkusnya.
-      */}
+      {/* STICKY SEARCH BAR */}
       <View style={styles.stickyHeader}>
         <View style={styles.searchSection}>
           <View style={styles.searchShadow} />
@@ -70,7 +89,6 @@ const CariMotor = () => {
             />
           )
         }
-        // Result Text tetap di dalam Header agar ikut ter-scroll
         ListHeaderComponent={
           <Text style={styles.resultsText}>
             {isLoading
@@ -82,6 +100,16 @@ const CariMotor = () => {
         showsVerticalScrollIndicator={false}
         overScrollMode="never"
         ListFooterComponent={<View style={{ height: 100 }} />}
+        // INTEGRASI REFRESH CONTROL
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={onRefresh}
+            colors={["#dff940"]} // Warna panah (Android)
+            tintColor={"#dff940"} // Warna spinner (iOS)
+            progressBackgroundColor={"#000"} // Warna background spinner (Android) - Seragamkan dengan tema Brum
+          />
+        }
       />
     </MotiView>
   );
@@ -91,14 +119,14 @@ export default CariMotor;
 
 const styles = StyleSheet.create({
   stickyHeader: {
-    paddingHorizontal: 20, // Memberikan ruang untuk shadow agar tidak terpotong
-    backgroundColor: "#FDFDFD", // Samakan dengan background screen
+    paddingHorizontal: 20,
+    backgroundColor: "#FDFDFD",
     zIndex: 10,
     paddingTop: 10,
   },
   searchSection: {
     height: 50,
-    marginBottom: 20, // Jarak ke teks hasil/list
+    marginBottom: 20,
   },
   searchShadow: {
     position: "absolute",
