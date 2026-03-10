@@ -8,9 +8,10 @@ import {
   ChevronRightIcon,
   Cog6ToothIcon,
   CreditCardIcon,
+  DocumentTextIcon,
   ShieldCheckIcon,
   StarIcon,
-  UserCircleIcon
+  UserCircleIcon,
 } from "react-native-heroicons/solid";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Fonts } from "../../constants/fonts";
@@ -19,7 +20,6 @@ import { useSafeRouter } from "../../hooks/use-safe-router";
 const Profile = () => {
   const router = useSafeRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [modalHowVisible, setModalHowVisible] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -30,7 +30,10 @@ const Profile = () => {
         <View style={styles.headerRow}>
           <Text style={styles.headerTitle}>Profil</Text>
           {isLoggedIn && (
-            <Pressable style={styles.notifBtn}>
+            <Pressable
+              onPress={() => router.push("/notifikasi")}
+              style={styles.notifBtn}
+            >
               <BellIcon size={24} color="black" />
             </Pressable>
           )}
@@ -125,37 +128,74 @@ const GuestUI = () => (
 );
 
 // --- SUB-COMPONENT: AUTHENTICATED UI ---
-const AuthenticatedUI = () => (
-  <View style={styles.authContainer}>
-    <View style={styles.userHeader}>
-      <View style={styles.avatarWrapper}>
-        <View style={styles.avatarShadow} />
-        <View style={styles.avatar}>
-          <Text style={styles.avatarInitial}>AS</Text>
+const AuthenticatedUI = () => {
+  const router = useSafeRouter();
+  return (
+    <View style={styles.authContainer}>
+      <View style={styles.userHeader}>
+        <View style={styles.avatarWrapper}>
+          <View style={styles.avatarShadow} />
+          <View style={styles.avatar}>
+            <Text style={styles.avatarInitial}>AS</Text>
+          </View>
+          <View style={styles.verifiedBadge}>
+            <StarIcon size={12} color="black" />
+          </View>
         </View>
-        <View style={styles.verifiedBadge}>
-          <StarIcon size={12} color="black" />
+        <View style={styles.userInfo}>
+          <Text style={styles.userName}>Alex Syahputra</Text>
+          <Text style={styles.userEmail}>alex.design@gmail.com</Text>
         </View>
       </View>
-      <View style={styles.userInfo}>
-        <Text style={styles.userName}>Alex Syahputra</Text>
-        <Text style={styles.userEmail}>alex.design@gmail.com</Text>
-      </View>
-    </View>
 
-    <View style={styles.statsRow}>
-      <View style={[styles.statBox, { backgroundColor: "#BAE6FD" }]}>
-        <CreditCardIcon size={20} color="black" />
-        <Text style={styles.statLabel}>Saldo</Text>
-        <Text style={styles.statValue}>Rp 125.000</Text>
+      <View style={styles.statsRow}>
+        {/* Card Saldo Jadi Full Width */}
+        <View style={[styles.statBox, { backgroundColor: "#BAE6FD", flex: 1 }]}>
+          <CreditCardIcon size={20} color="black" />
+          <View>
+            <Text style={styles.statLabel}>Saldo BrumWallet</Text>
+            <Text style={styles.statValue}>Rp 125.000</Text>
+          </View>
+        </View>
       </View>
-      <View style={[styles.statBox, { backgroundColor: "#BBF7D0" }]}>
-        <Text style={styles.statLabel}>Total Trip</Text>
-        <Text style={styles.statValue}>12 Kali</Text>
-      </View>
+
+      {/* Button Menu Riwayat Invoice */}
+      <Pressable onPress={() => {}} style={styles.invoiceBtnWrapper}>
+        {({ pressed }) => (
+          <View style={{ flex: 1, height: 60 }}>
+            <View style={styles.btnShadow} />
+            <MotiView
+              animate={{
+                translateX: pressed ? 4 : 0,
+                translateY: pressed ? 4 : 0,
+              }}
+              transition={{ type: "timing", duration: 50 }}
+              style={[
+                styles.btnBody,
+                {
+                  backgroundColor: "white",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  paddingHorizontal: 20,
+                },
+              ]}
+            >
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
+              >
+                <View style={styles.invoiceIconCircle}>
+                  <DocumentTextIcon size={18} color="black" />
+                </View>
+                <Text style={styles.btnText}>RIWAYAT INVOICE</Text>
+              </View>
+              <ChevronRightIcon size={20} color="black" />
+            </MotiView>
+          </View>
+        )}
+      </Pressable>
     </View>
-  </View>
-);
+  );
+};
 
 const GridItem = ({ icon, title, color, onPress }) => (
   <Pressable onPress={onPress} style={styles.gridItemWrapper}>
@@ -210,46 +250,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 15,
     marginTop: 10,
-  },
-
-  // PROMO CARD (REPAIRED)
-  promoWrapper: {
-    marginBottom: 25,
-    width: "100%",
-  },
-  promoShadow: {
-    position: "absolute",
-    top: 4,
-    left: 4,
-    right: -4,
-    bottom: -4,
-    backgroundColor: "black",
-    borderRadius: 16,
-  },
-  promoBody: {
-    flex: 1,
-    backgroundColor: "#C7D2FE",
-    borderWidth: 2,
-    borderColor: "black",
-    borderRadius: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 15,
-  },
-  promoTitle: { fontFamily: Fonts.bold, fontSize: 16, color: "black" },
-  promoSub: {
-    fontFamily: Fonts.regular,
-    fontSize: 11,
-    color: "black",
-    opacity: 0.7,
-  },
-  promoIconBtn: {
-    backgroundColor: "white",
-    padding: 10,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: "black",
-    marginLeft: 5,
   },
 
   // GUEST UI STYLES
@@ -345,17 +345,35 @@ const styles = StyleSheet.create({
   userInfo: { marginLeft: 20 },
   userName: { fontFamily: Fonts.bold, fontSize: 22 },
   userEmail: { fontFamily: Fonts.regular, fontSize: 14, color: "#666" },
-  statsRow: { flexDirection: "row", gap: 15 },
+  statsRow: { flexDirection: "row" },
   statBox: {
-    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
     padding: 15,
     borderRadius: 16,
     borderWidth: 2,
     borderColor: "black",
-    gap: 5,
+    gap: 12,
   },
   statLabel: { fontFamily: Fonts.regular, fontSize: 10, color: "black" },
   statValue: { fontFamily: Fonts.bold, fontSize: 16 },
+
+  // INVOICE MENU BUTTON
+  invoiceBtnWrapper: {
+    marginTop: 15,
+    height: 60,
+    width: "100%",
+  },
+  invoiceIconCircle: {
+    width: 32,
+    height: 32,
+    backgroundColor: "#DFF940",
+    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: "black",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 
   // BUTTONS & OTHERS
   btnShadow: {

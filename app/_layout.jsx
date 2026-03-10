@@ -63,6 +63,7 @@ export default function RootLayout() {
         />
         <Stack.Screen name="chat" options={{ headerShown: false }} />
         <Stack.Screen name="perpanjang-sewa" options={{ headerShown: false }} />
+        <Stack.Screen name="notifikasi" options={{ headerShown: false }} />
       </Stack>
     </GestureHandlerRootView>
   );
