@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { ClockIcon } from "react-native-heroicons/solid";
 import { Fonts } from "../../constants/fonts";
 
-const CountdownTimer = ({ targetDate }) => {
+const CountdownTimer = ({ targetDate, isMinimal = false }) => {
   const [timeLeft, setTimeLeft] = useState("");
 
   useEffect(() => {
@@ -19,11 +19,10 @@ const CountdownTimer = ({ targetDate }) => {
       const difference = target - now;
 
       if (difference <= 0) {
-        setTimeLeft("Waktu Habis");
+        setTimeLeft("Habis");
         return;
       }
 
-      // Hitung Hari, Jam, Menit, Detik
       const days = Math.floor(difference / (1000 * 60 * 60 * 24));
       const hours = Math.floor(
         (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
@@ -31,16 +30,13 @@ const CountdownTimer = ({ targetDate }) => {
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-      // Format angka agar selalu 2 digit
       const h = hours.toString().padStart(2, "0");
       const m = minutes.toString().padStart(2, "0");
       const s = seconds.toString().padStart(2, "0");
 
-      // Logika tampilan: Jika lebih dari 0 hari, tampilkan "Xd HH:MM:SS"
       if (days > 0) {
         setTimeLeft(`${days}d ${h}:${m}:${s}`);
       } else {
-        // Jika sisa waktu kurang dari 24 jam, langsung "HH:MM:SS"
         setTimeLeft(`${h}:${m}:${s}`);
       }
     };
@@ -51,9 +47,11 @@ const CountdownTimer = ({ targetDate }) => {
   }, [targetDate]);
 
   return (
-    <View style={styles.countdownBox}>
-      <ClockIcon size={16} color="black" />
-      <Text style={styles.countdownText}>{timeLeft}</Text>
+    <View style={[styles.countdownBox, isMinimal && styles.minimalBox]}>
+      <ClockIcon size={14} color="black" />
+      <Text style={[styles.countdownText, isMinimal && styles.minimalText]}>
+        {timeLeft}
+      </Text>
     </View>
   );
 };
@@ -63,19 +61,31 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "#F3F4F6", // Abu-abu netral
+    backgroundColor: "#F3F4F6",
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
-    borderWidth: 1.5, // Sedikit lebih tebal agar terasa "honest design"
-    borderColor: "black", // Outline hitam tegas khas Brum
+    borderWidth: 1.5,
+    borderColor: "black",
+  },
+  minimalBox: {
+    backgroundColor: "transparent",
+    borderWidth: 0,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
   },
   countdownText: {
     fontFamily: Fonts.semibold,
     fontSize: 13,
     color: "black",
-    minWidth: 85, // Ditambah sedikit karena ada karakter 'd'
+    minWidth: 80,
     textAlign: "center",
+  },
+  minimalText: {
+    textAlign: "left",
+    minWidth: 0,
+    fontSize: 14,
+    color: "black", // Tetap hitam biar kontras di atas background amber
   },
 });
 

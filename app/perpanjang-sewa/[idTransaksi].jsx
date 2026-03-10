@@ -26,13 +26,11 @@ const ExtendLeaseScreen = () => {
   const [duration, setDuration] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // --- HARGA & KALKULASI ---
   const UNIT_PRICE = 150000;
   const APP_FEE = 5000;
   const subtotal = duration * UNIT_PRICE;
   const grandTotal = subtotal + APP_FEE;
 
-  // --- MOCK DATA ---
   const dumyData = {
     qrisUrl:
       "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=BRUM-EXTEND-12345",
@@ -40,11 +38,8 @@ const ExtendLeaseScreen = () => {
     total: grandTotal,
   };
 
-  // --- STATE ---
-  // Default set ke null untuk testing Config View, atau isi objek untuk testing Payment View
   const [paymentData, setPaymentData] = useState(null);
 
-  // --- HANDLERS ---
   const handleCreateInvoice = async () => {
     setIsProcessing(true);
     await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -58,7 +53,6 @@ const ExtendLeaseScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* --- HEADER --- */}
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
           <ChevronLeftIcon size={24} color="black" />
@@ -70,7 +64,6 @@ const ExtendLeaseScreen = () => {
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {!paymentData ? (
-          /* --- STATE 1: CONFIG VIEW --- */
           <MotiView
             from={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -127,16 +120,13 @@ const ExtendLeaseScreen = () => {
                   Rp {subtotal.toLocaleString()}
                 </Text>
               </View>
-
               <View style={[styles.summaryRow, { marginTop: 8 }]}>
                 <Text style={styles.summaryLabel}>Biaya Aplikasi</Text>
                 <Text style={styles.summaryValue}>
                   Rp {APP_FEE.toLocaleString()}
                 </Text>
               </View>
-
               <View style={styles.line} />
-
               <View style={styles.summaryRow}>
                 <Text style={styles.totalLabel}>Total Bayar</Text>
                 <Text style={styles.totalValue}>
@@ -146,17 +136,29 @@ const ExtendLeaseScreen = () => {
             </View>
           </MotiView>
         ) : (
-          /* --- STATE 2: PAYMENT VIEW (QR CODE) --- */
           <MotiView
             from={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             key="payment-view"
           >
-            <View style={styles.timerContainer}>
-              <Text style={styles.timerLabel}>
-                Selesaikan pembayaran dalam:
-              </Text>
-              <CountdownTimer targetDate={paymentData.expiryTime} />
+            {/* --- BAR INFO: WARNA AMBER TAPI BORDER TETAP HITAM TEGAS --- */}
+            <View style={styles.horizontalInfoRow}>
+              <View style={styles.timerColumn}>
+                <Text style={styles.miniLabel}>Selesaikan Dalam</Text>
+                <CountdownTimer
+                  targetDate={paymentData.expiryTime}
+                  isMinimal={true}
+                />
+              </View>
+
+              <View style={styles.verticalDivider} />
+
+              <View style={styles.instructionColumn}>
+                <Text style={styles.miniLabel}>Instruksi</Text>
+                <Text style={styles.miniWarningText}>
+                  Scan via m-banking atau e-wallet Anda.
+                </Text>
+              </View>
             </View>
 
             <View style={styles.qrisDisplayContainer}>
@@ -168,7 +170,7 @@ const ExtendLeaseScreen = () => {
                   resizeMode="contain"
                 />
                 <Text style={styles.totalAmountText}>
-                  Rp {(paymentData?.total || 0).toLocaleString()}
+                  Rp {paymentData.total.toLocaleString()}
                 </Text>
               </View>
             </View>
@@ -180,18 +182,10 @@ const ExtendLeaseScreen = () => {
               <ArrowDownTrayIcon size={20} color="black" />
               <Text style={styles.downloadText}>SIMPAN QR KE GALERI</Text>
             </Pressable>
-
-            <View style={styles.warningBox}>
-              <Text style={styles.warningText}>
-                Silahkan scan QRIS di atas menggunakan aplikasi m-banking atau
-                e-wallet Anda.
-              </Text>
-            </View>
           </MotiView>
         )}
       </ScrollView>
 
-      {/* --- FOOTER ACTIONS --- */}
       <View style={styles.footer}>
         {!paymentData ? (
           <Pressable onPress={handleCreateInvoice} disabled={isProcessing}>
@@ -212,9 +206,7 @@ const ExtendLeaseScreen = () => {
                   {isProcessing ? (
                     <ActivityIndicator color="black" />
                   ) : (
-                    <Text style={styles.btnText}>
-                      BAYAR PERPANJANGAN SEKARANG
-                    </Text>
+                    <Text style={styles.btnText}>BAYAR SEKARANG</Text>
                   )}
                 </MotiView>
               </View>
@@ -239,7 +231,6 @@ const ExtendLeaseScreen = () => {
                 </View>
               )}
             </Pressable>
-
             <Pressable onPress={handleCancelPayment}>
               <Text style={styles.cancelText}>Batalkan Perpanjangan</Text>
             </Pressable>
@@ -252,16 +243,10 @@ const ExtendLeaseScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FDFDFD" },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 20,
-    gap: 15,
-  },
+  header: { flexDirection: "row", alignItems: "center", padding: 20, gap: 15 },
   backBtn: { padding: 8, backgroundColor: "white" },
   headerTitle: { fontFamily: Fonts.semibold, fontSize: 18 },
   scrollContent: { padding: 20 },
-
   infoCard: {
     backgroundColor: "black",
     padding: 15,
@@ -339,13 +324,39 @@ const styles = StyleSheet.create({
   totalLabel: { fontFamily: Fonts.semibold, fontSize: 14 },
   totalValue: { fontFamily: Fonts.semibold, fontSize: 20 },
 
-  timerContainer: { alignItems: "center", marginBottom: 25 },
-  timerLabel: {
-    fontFamily: Fonts.regular,
-    fontSize: 12,
-    color: "#666",
-    marginBottom: 8,
+  // --- STYLE BAR YANG SUDAH DIPERBAIKI (TETAP TEGAS) ---
+  horizontalInfoRow: {
+    flexDirection: "row",
+    backgroundColor: "#FFFBEB", // Background Kuning Amber
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 20,
+    alignItems: "center",
+    borderWidth: 2, // Border Hitam Tebal
+    borderColor: "black",
   },
+  timerColumn: { flex: 1 },
+  instructionColumn: { flex: 1.5 },
+  verticalDivider: {
+    width: 2, // Garis pemisah hitam tebal
+    height: "100%",
+    backgroundColor: "black",
+    marginHorizontal: 15,
+  },
+  miniLabel: {
+    fontFamily: Fonts.semibold,
+    fontSize: 9,
+    color: "#B45309", // Label warna oranye gelap
+    textTransform: "uppercase",
+    marginBottom: 2,
+  },
+  miniWarningText: {
+    fontFamily: Fonts.regular,
+    fontSize: 11,
+    color: "black", // Teks instruksi hitam biar kebaca jelas
+    lineHeight: 14,
+  },
+
   qrisDisplayContainer: {
     alignSelf: "center",
     position: "relative",
@@ -386,22 +397,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F0F0F0",
   },
   downloadText: { fontFamily: Fonts.semibold, fontSize: 12 },
-  warningBox: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: "#FFFBEB",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#FEF3C7",
-  },
-  warningText: {
-    fontFamily: Fonts.regular,
-    fontSize: 11,
-    color: "#92400E",
-    textAlign: "center",
-    lineHeight: 16,
-  },
-
   footer: { padding: 20, borderTopWidth: 1, borderColor: "#EEE" },
   actionBtnWrapper: { position: "relative", height: 55 },
   btnShadow: {
