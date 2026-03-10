@@ -8,11 +8,9 @@ const CountdownTimer = ({ targetDate }) => {
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      // Pastikan targetDate ada, kalau gak ada set ke 0
       const target = new Date(targetDate).getTime();
       const now = new Date().getTime();
 
-      // Cek apakah target valid (bukan NaN)
       if (isNaN(target)) {
         setTimeLeft("00:00:00");
         return;
@@ -25,17 +23,26 @@ const CountdownTimer = ({ targetDate }) => {
         return;
       }
 
-      // Hitung jam, menit, detik
-      const hours = Math.floor(difference / (1000 * 60 * 60));
+      // Hitung Hari, Jam, Menit, Detik
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+      );
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-      // PadStart adalah cara modern untuk nambahin angka 0 di depan
+      // Format angka agar selalu 2 digit
       const h = hours.toString().padStart(2, "0");
       const m = minutes.toString().padStart(2, "0");
       const s = seconds.toString().padStart(2, "0");
 
-      setTimeLeft(`${h}:${m}:${s}`);
+      // Logika tampilan: Jika lebih dari 0 hari, tampilkan "Xd HH:MM:SS"
+      if (days > 0) {
+        setTimeLeft(`${days}d ${h}:${m}:${s}`);
+      } else {
+        // Jika sisa waktu kurang dari 24 jam, langsung "HH:MM:SS"
+        setTimeLeft(`${h}:${m}:${s}`);
+      }
     };
 
     calculateTimeLeft();
@@ -56,18 +63,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: "#F3F4F6", // Abu-abu netral
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#DDD",
+    borderWidth: 1.5, // Sedikit lebih tebal agar terasa "honest design"
+    borderColor: "black", // Outline hitam tegas khas Brum
   },
   countdownText: {
     fontFamily: Fonts.semibold,
-    fontSize: 14,
+    fontSize: 13,
     color: "black",
-    minWidth: 70, // Jaga agar lebar kotak tidak goyang saat angka berubah
+    minWidth: 85, // Ditambah sedikit karena ada karakter 'd'
+    textAlign: "center",
   },
 });
 

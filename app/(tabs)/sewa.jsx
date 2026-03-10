@@ -1,6 +1,14 @@
-import { useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { useCallback, useState } from "react";
 import {
+  FlatList,
+  Pressable,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import {
+  ArrowPathIcon,
   CalendarDaysIcon,
   ChatBubbleLeftRightIcon,
   MapIcon,
@@ -18,6 +26,7 @@ import { useSafeRouter } from "../../hooks/use-safe-router";
 const ActivityScreen = () => {
   const router = useSafeRouter();
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const dummyBookings = [
     {
@@ -27,7 +36,7 @@ const ActivityScreen = () => {
       status: "Siap Diambil",
       statusCode: "PENDING",
       location: "Brum Rental Sentani",
-      returnTime: null, // Belum diambil, belum ada deadline
+      returnTime: null,
       unreadChat: false,
     },
     {
@@ -37,11 +46,22 @@ const ActivityScreen = () => {
       status: "Sedang Digunakan",
       statusCode: "ACTIVE",
       location: "Brum Rental Sentani",
-      // Contoh: Motor harus balik tanggal 24 Feb 2026 jam 18:00
-      returnTime: "2026-02-24T18:00:00",
+      returnTime: "2026-03-12T18:00:00",
       unreadChat: false,
     },
   ];
+
+  // Fungsi Refresh Data
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+
+    // Simulasi Fetching Data dari Backend Brum
+    // Ganti ini dengan fungsi hit API lo: await fetchMyBookings();
+    console.log("Refetching data...");
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    setRefreshing(false);
+  }, []);
 
   const handleChatPress = () => {
     router.push("/chat/id-transaksi-123");
@@ -86,7 +106,6 @@ const ActivityScreen = () => {
           {/* FOOTER DINAMIS */}
           <View style={styles.footerRow}>
             {isActive ? (
-              // Tampilan saat Motor Sudah Diambil
               <View style={styles.activeFooter}>
                 <CountdownTimer targetDate={item.returnTime} />
 
@@ -99,7 +118,6 @@ const ActivityScreen = () => {
                 </Pressable>
               </View>
             ) : (
-              // Tampilan saat Motor Belum Diambil (Ada Tombol Navigasi)
               <View style={styles.pendingFooter}>
                 <View style={styles.qrTrigger}>
                   <QrCodeIcon size={20} color="black" />
@@ -122,8 +140,21 @@ const ActivityScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* HEADER DENGAN TOMBOL REFRESH */}
       <View style={styles.header}>
-        <Text style={styles.title}>SEWA SAYA</Text>
+        <View style={styles.headerTop}>
+          <Text style={styles.title}>SEWA SAYA</Text>
+          <Pressable
+            onPress={onRefresh}
+            disabled={refreshing}
+            style={({ pressed }) => [
+              styles.refreshBtn,
+              pressed && { opacity: 0.7 },
+            ]}
+          >
+            <ArrowPathIcon size={22} color="black" />
+          </Pressable>
+        </View>
       </View>
 
       <FlatList
@@ -132,6 +163,16 @@ const ActivityScreen = () => {
         keyExtractor={(item) => item.id}
         overScrollMode="never"
         renderItem={renderItem}
+        // INTEGRASI PULL TO REFRESH
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#DFF940", "black"]} // Warna spinner di Android
+            tintColor="#DFF940" // Warna spinner di iOS
+            progressBackgroundColor="black" // Background spinner (opsional, biar makin brutalist)
+          />
+        }
       />
 
       {/* Modal 1: Jika status PENDING (Belum diambil) */}
@@ -156,7 +197,19 @@ const ActivityScreen = () => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FDFDFD" },
   header: { paddingHorizontal: 20, paddingTop: 10, marginBottom: 10 },
+  headerTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   title: { fontFamily: Fonts.semibold, fontSize: 24 },
+  refreshBtn: {
+    padding: 8,
+    backgroundColor: "white",
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "black",
+  },
 
   cardContainer: { position: "relative", marginBottom: 25 },
   cardShadow: {
@@ -204,7 +257,6 @@ const styles = StyleSheet.create({
     borderColor: "#CCC",
   },
 
-  // Gaya Pending Footer (QR + Maps)
   pendingFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -213,7 +265,6 @@ const styles = StyleSheet.create({
   qrTrigger: { flexDirection: "row", alignItems: "center", gap: 8 },
   qrTriggerText: { fontFamily: Fonts.semibold, fontSize: 12 },
 
-  // Gaya Active Rent (Countdown + Chat)
   activeFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -250,7 +301,7 @@ const styles = StyleSheet.create({
   navBtn: {
     width: 40,
     height: 40,
-    backgroundColor: "#BAE6FD", // Biru Sekunder Brum
+    backgroundColor: "#BAE6FD",
     borderWidth: 2,
     borderColor: "black",
     borderRadius: 10,

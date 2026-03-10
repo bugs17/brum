@@ -1,3 +1,4 @@
+import { MotiView } from "moti";
 import {
   Modal,
   Pressable,
@@ -10,11 +11,22 @@ import {
   ClockIcon,
   ExclamationTriangleIcon,
   MapPinIcon,
+  PlusIcon,
   XMarkIcon,
 } from "react-native-heroicons/solid";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Fonts } from "../constants/fonts";
+import { useSafeRouter } from "../hooks/use-safe-router";
 
 const ActiveBookingModal = ({ isVisible, booking, onClose }) => {
+  const insets = useSafeAreaInsets();
+  const router = useSafeRouter();
+
+  const handleExtendLease = () => {
+    router.push(`/perpanjang-sewa/${booking?.id}`);
+    onClose();
+  };
+
   return (
     <Modal
       visible={isVisible}
@@ -23,7 +35,9 @@ const ActiveBookingModal = ({ isVisible, booking, onClose }) => {
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        <View style={styles.modalContainer}>
+        <View
+          style={[styles.modalContainer, { marginBottom: insets.bottom + 40 }]}
+        >
           <View style={styles.modalShadow} />
           <View style={styles.modalBody}>
             {/* --- HEADER --- */}
@@ -57,6 +71,44 @@ const ActiveBookingModal = ({ isVisible, booking, onClose }) => {
                   <MapPinIcon size={16} color="#666" />
                   <Text style={styles.locationText}>{booking?.location}</Text>
                 </View>
+              </View>
+
+              {/* --- EXTEND LEASE PROMPT --- */}
+              <View style={styles.extendSection}>
+                <View style={styles.extendInfo}>
+                  <Text style={styles.extendTitle}>
+                    Ingin pakai lebih lama?
+                  </Text>
+                  <Text style={styles.extendSub}>
+                    Perpanjang masa sewa Anda sekarang tanpa perlu ke diler.
+                  </Text>
+                </View>
+
+                {/* FIX: Pressable area harus mencakup seluruh tombol */}
+                <Pressable onPress={handleExtendLease}>
+                  {({ pressed }) => (
+                    <View style={styles.extendBtnWrapper}>
+                      {/* Shadow tetap diam di belakang */}
+                      <View style={styles.extendBtnShadow} />
+
+                      {/* MotiView yang bergerak menutupi shadow saat ditekan */}
+                      <MotiView
+                        animate={{
+                          translateX: pressed ? 4 : 0,
+                          translateY: pressed ? 4 : 0,
+                        }}
+                        transition={{
+                          type: "timing",
+                          duration: 70, // Lebih cepat agar responsif
+                        }}
+                        style={styles.extendBtnBody}
+                      >
+                        <PlusIcon size={18} color="black" />
+                        <Text style={styles.extendBtnText}>PERPANJANG</Text>
+                      </MotiView>
+                    </View>
+                  )}
+                </Pressable>
               </View>
 
               {/* --- RULES SECTION --- */}
@@ -109,11 +161,15 @@ const ActiveBookingModal = ({ isVisible, booking, onClose }) => {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.9)",
+    backgroundColor: "rgba(0,0,0,0.85)",
     justifyContent: "center",
-    padding: 25,
+    paddingHorizontal: 25,
   },
-  modalContainer: { position: "relative", maxHeight: "85%" },
+  modalContainer: {
+    position: "relative",
+    maxHeight: "80%",
+    width: "100%",
+  },
   modalShadow: {
     position: "absolute",
     top: 6,
@@ -131,7 +187,6 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
   },
-
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -147,18 +202,15 @@ const styles = StyleSheet.create({
     borderColor: "black",
     borderRadius: 8,
   },
-
   scrollContent: { paddingBottom: 10 },
-
-  // TIME CARD
   timeCard: {
     width: "100%",
-    backgroundColor: "#DFF940",
+    backgroundColor: "white",
     borderWidth: 2,
     borderColor: "black",
     borderRadius: 12,
     padding: 15,
-    marginBottom: 20,
+    marginBottom: 15,
   },
   timeRow: {
     flexDirection: "row",
@@ -168,7 +220,7 @@ const styles = StyleSheet.create({
   },
   timeTitle: { fontFamily: Fonts.regular, fontSize: 12 },
   timeValue: { fontFamily: Fonts.semibold, fontSize: 18 },
-  timeSub: { fontFamily: Fonts.regular, fontSize: 12, color: "#333" },
+  timeSub: { fontFamily: Fonts.regular, fontSize: 12, color: "#666" },
   divider: {
     height: 1,
     backgroundColor: "black",
@@ -176,9 +228,59 @@ const styles = StyleSheet.create({
     opacity: 0.1,
   },
   locationRow: { flexDirection: "row", alignItems: "center", gap: 4 },
-  locationText: { fontFamily: Fonts.regular, fontSize: 12, color: "#333" },
+  locationText: { fontFamily: Fonts.regular, fontSize: 12, color: "#666" },
 
-  // RULES
+  extendSection: {
+    width: "100%",
+    backgroundColor: "#F0F9FF",
+    borderWidth: 2,
+    borderColor: "#BAE6FD",
+    borderRadius: 12,
+    padding: 15,
+    marginBottom: 20,
+    gap: 12,
+  },
+  extendInfo: { flex: 1 },
+  extendTitle: { fontFamily: Fonts.semibold, fontSize: 14, color: "#0369A1" },
+  extendSub: {
+    fontFamily: Fonts.regular,
+    fontSize: 11,
+    color: "#075985",
+    marginTop: 2,
+  },
+
+  // Perbaikan Button Wrapper
+  extendBtnWrapper: {
+    position: "relative",
+    height: 48,
+    width: "100%",
+  },
+  extendBtnShadow: {
+    position: "absolute",
+    top: 4,
+    left: 4,
+    right: -4,
+    bottom: -4,
+    backgroundColor: "black",
+    borderRadius: 12,
+  },
+  extendBtnBody: {
+    position: "absolute", // Harus absolute agar menimpa shadow
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#DFF940",
+    borderWidth: 2,
+    borderColor: "black",
+    borderRadius: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  extendBtnText: { fontFamily: Fonts.semibold, fontSize: 13 },
+
   sectionTitleBox: {
     alignSelf: "flex-start",
     borderBottomWidth: 2,
@@ -191,7 +293,6 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     gap: 10,
     marginBottom: 10,
-    width: "100%",
   },
   ruleBullet: {
     width: 6,
@@ -207,7 +308,6 @@ const styles = StyleSheet.create({
     flex: 1,
     lineHeight: 18,
   },
-
   warningBox: {
     flexDirection: "row",
     gap: 10,
@@ -225,7 +325,6 @@ const styles = StyleSheet.create({
     flex: 1,
     lineHeight: 16,
   },
-
   understandBtn: {
     width: "100%",
     backgroundColor: "black",
