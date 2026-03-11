@@ -1,4 +1,5 @@
 import { MotiView } from "moti";
+import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
   BanknotesIcon,
@@ -6,20 +7,29 @@ import {
   ChevronRightIcon,
   IdentificationIcon,
   ShieldCheckIcon,
+  TrashIcon,
   UserCircleIcon,
 } from "react-native-heroicons/solid";
 import { SafeAreaView } from "react-native-safe-area-context";
+import ModalHapusAkun from "../../components/modal-hapus-akun";
 import { Fonts } from "../../constants/fonts";
 import { useSafeRouter } from "../../hooks/use-safe-router";
 
 const EditProfileHub = () => {
   const router = useSafeRouter();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Custom Header */}
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.iconBtn}>
+        <Pressable
+          onPress={() => router.back()}
+          style={({ pressed }) => [
+            styles.iconBtn,
+            pressed && styles.btnPressed,
+          ]}
+        >
           <ChevronLeftIcon size={24} color="black" />
         </Pressable>
         <Text style={styles.headerTitle}>Edit Profil</Text>
@@ -34,12 +44,11 @@ const EditProfileHub = () => {
           subtitle="Nama, NIK, dan Foto KTP"
           icon={<IdentificationIcon size={24} color="black" />}
           status="verified"
-          color="#BAE6FD" // Blue
+          color="#BAE6FD"
           onPress={() => {
-            /* Navigasi ke ProfileCompletionScreen dengan mode edit */
             router.push({
               pathname: "profile-completion",
-              params: { mode: "edit", userId: "123" }, // Mengirim mode edit
+              params: { mode: "edit", userId: "123" },
             });
           }}
         />
@@ -49,7 +58,7 @@ const EditProfileHub = () => {
           subtitle="Foto SIM C Aktif"
           icon={<ShieldCheckIcon size={24} color="black" />}
           status="missing"
-          color="#BBF7D0" // Green
+          color="#BBF7D0"
           onPress={() => router.push("dokumen-berkendara")}
         />
 
@@ -61,11 +70,8 @@ const EditProfileHub = () => {
           subtitle="Untuk penarikan saldo (Withdraw)"
           icon={<BanknotesIcon size={24} color="black" />}
           status="missing"
-          color="#FEF08A" // Yellow
-          onPress={() => {
-            /* Navigasi ke Screen Atur Rekening */
-            router.push("setting-rekening");
-          }}
+          color="#FEF08A"
+          onPress={() => router.push("setting-rekening")}
         />
 
         {/* Section 3: Akun */}
@@ -74,7 +80,7 @@ const EditProfileHub = () => {
           title="Ubah Username"
           subtitle="Ganti nama tampilan kamu"
           icon={<UserCircleIcon size={24} color="black" />}
-          color="#FECACA" // Red/Pink
+          color="#FECACA"
           onPress={() => router.push("edit-username")}
         />
 
@@ -84,15 +90,31 @@ const EditProfileHub = () => {
             diubah secara instan demi keamanan transaksi.
           </Text>
         </View>
+
+        {/* --- DANGER ZONE --- */}
+        <View style={styles.dangerZone}>
+          <Pressable
+            style={styles.deleteLink}
+            onPress={() => setShowDeleteModal(true)}
+          >
+            <TrashIcon size={16} color="#EF4444" />
+            <Text style={styles.deleteLinkText}>Hapus Akun Permanen</Text>
+          </Pressable>
+        </View>
       </ScrollView>
+
+      {/* --- MODAL HAPUS AKUN DINAMIS --- */}
+      <ModalHapusAkun
+        showDeleteModal={showDeleteModal}
+        setShowDeleteModal={setShowDeleteModal}
+      />
     </SafeAreaView>
   );
 };
 
-// --- Komponen Reusable Menu Card ---
+// --- Komponen Reusable Menu Card (VERSI LENGKAP) ---
 const MenuCard = ({ title, subtitle, icon, color, onPress, status = null }) => {
   const renderStatusBadge = () => {
-    // Jika status tidak ada, jangan render apa-apa
     if (!status) return null;
 
     const statusStyles = {
@@ -136,11 +158,7 @@ const MenuCard = ({ title, subtitle, icon, color, onPress, status = null }) => {
             </View>
             <View style={styles.textContainer}>
               <Text style={styles.cardTitle}>{title}</Text>
-              <Text
-                style={[styles.cardSubtitle, { marginBottom: status ? 0 : 0 }]}
-              >
-                {subtitle}
-              </Text>
+              <Text style={styles.cardSubtitle}>{subtitle}</Text>
               {renderStatusBadge()}
             </View>
             <ChevronRightIcon size={20} color="black" />
@@ -152,22 +170,6 @@ const MenuCard = ({ title, subtitle, icon, color, onPress, status = null }) => {
 };
 
 const styles = StyleSheet.create({
-  iconBtn: { padding: 8 },
-  badge: {
-    alignSelf: "flex-start",
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "black",
-    marginTop: 6,
-  },
-  badgeText: {
-    fontFamily: Fonts.bold,
-    fontSize: 8, // Kecil saja agar elegan
-    color: "black",
-    letterSpacing: 0.5,
-  },
   container: { flex: 1, backgroundColor: "#FDFDFD" },
   header: {
     flexDirection: "row",
@@ -176,15 +178,10 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     gap: 15,
   },
-  backBtn: {
-    padding: 8,
-    borderWidth: 2,
-    borderColor: "black",
-    borderRadius: 12,
-    backgroundColor: "white",
-  },
   headerTitle: { fontFamily: Fonts.bold, fontSize: 24 },
-  scrollContent: { paddingHorizontal: 25, paddingBottom: 40 },
+  iconBtn: { padding: 8 },
+  btnPressed: { opacity: 0.7, transform: [{ scale: 0.95 }] },
+  scrollContent: { paddingHorizontal: 25, paddingBottom: 60 },
   sectionLabel: {
     fontFamily: Fonts.semibold,
     fontSize: 12,
@@ -194,7 +191,7 @@ const styles = StyleSheet.create({
   },
 
   // CARD STYLE
-  cardWrapper: { height: 105, marginBottom: 18, position: "relative" },
+  cardWrapper: { marginBottom: 18, position: "relative" },
   cardShadow: {
     position: "absolute",
     top: 4,
@@ -226,22 +223,52 @@ const styles = StyleSheet.create({
   textContainer: { flex: 1, marginLeft: 15 },
   cardTitle: { fontFamily: Fonts.bold, fontSize: 16, color: "black" },
   cardSubtitle: { fontFamily: Fonts.regular, fontSize: 12, color: "#666" },
+  badge: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "black",
+    marginTop: 6,
+  },
+  badgeText: {
+    fontFamily: Fonts.bold,
+    fontSize: 8,
+    color: "black",
+    letterSpacing: 0.5,
+  },
 
   infoBox: {
     marginTop: 20,
     padding: 15,
-    backgroundColor: "#EEE",
+    backgroundColor: "#F5F5F5",
     borderRadius: 12,
     borderStyle: "dashed",
     borderWidth: 2,
-    borderColor: "#999",
+    borderColor: "#DDD",
   },
   infoText: {
     fontFamily: Fonts.regular,
     fontSize: 12,
-    color: "#666",
+    color: "#999",
     lineHeight: 18,
     textAlign: "center",
+  },
+
+  // DANGER ZONE
+  dangerZone: { marginTop: 40, alignItems: "center", marginBottom: 20 },
+  deleteLink: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    padding: 10,
+  },
+  deleteLinkText: {
+    fontFamily: Fonts.bold,
+    fontSize: 13,
+    color: "#EF4444",
+    textDecorationLine: "underline",
   },
 });
 
