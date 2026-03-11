@@ -160,7 +160,10 @@ const AuthenticatedUI = () => {
       </View>
 
       {/* Button Menu Riwayat Invoice */}
-      <Pressable onPress={() => {}} style={styles.invoiceBtnWrapper}>
+      <Pressable
+        onPress={() => router.push("/riwayat-invoice")}
+        style={styles.invoiceBtnWrapper}
+      >
         {({ pressed }) => (
           <View style={{ flex: 1, height: 60 }}>
             <View style={styles.btnShadow} />
