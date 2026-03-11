@@ -19,7 +19,7 @@ import { useSafeRouter } from "../../hooks/use-safe-router";
 
 const Profile = () => {
   const router = useSafeRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -67,10 +67,12 @@ const Profile = () => {
           <MenuItem
             icon={<ChatBubbleLeftRightIcon size={22} color="black" />}
             title="Pusat Bantuan"
+            onPress={() => router.push("/pusat-bantuan")}
           />
           <MenuItem
             icon={<ShieldCheckIcon size={22} color="black" />}
             title="Syarat & Ketentuan"
+            onPress={() => {}}
           />
 
           {isLoggedIn && (
@@ -221,8 +223,11 @@ const GridItem = ({ icon, title, color, onPress }) => (
   </Pressable>
 );
 
-const MenuItem = ({ icon, title, isLast, color = "black" }) => (
-  <Pressable style={[styles.menuItem, isLast && { borderBottomWidth: 0 }]}>
+const MenuItem = ({ icon, title, isLast, color = "black", onPress }) => (
+  <Pressable
+    onPress={onPress}
+    style={[styles.menuItem, isLast && { borderBottomWidth: 0 }]}
+  >
     <View style={styles.menuLeft}>
       {icon}
       <Text style={[styles.menuTitle, { color }]}>{title}</Text>
