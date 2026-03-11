@@ -27,17 +27,17 @@ const Profile = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.headerRow}>
-          <Text style={styles.headerTitle}>Profil</Text>
-          {isLoggedIn && (
+        {isLoggedIn && (
+          <View style={styles.headerRow}>
+            <Text style={styles.headerTitle}>Profil</Text>
             <Pressable
               onPress={() => router.push("/notifikasi")}
               style={styles.notifBtn}
             >
               <BellIcon size={24} color="black" />
             </Pressable>
-          )}
-        </View>
+          </View>
+        )}
 
         {isLoggedIn ? <AuthenticatedUI /> : <GuestUI />}
 
@@ -68,6 +68,11 @@ const Profile = () => {
             icon={<ChatBubbleLeftRightIcon size={22} color="black" />}
             title="Pusat Bantuan"
             onPress={() => router.push("/pusat-bantuan")}
+          />
+          <MenuItem
+            icon={<DocumentTextIcon size={22} color="black" />}
+            title="Kebijakan Privasi"
+            onPress={() => router.push("/kebijakan-privasi")}
           />
           <MenuItem
             icon={<ShieldCheckIcon size={22} color="black" />}

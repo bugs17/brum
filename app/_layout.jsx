@@ -71,6 +71,10 @@ export default function RootLayout() {
           name="syarat-dan-ketentuan"
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="kebijakan-privasi"
+          options={{ headerShown: false }}
+        />
       </Stack>
     </GestureHandlerRootView>
   );

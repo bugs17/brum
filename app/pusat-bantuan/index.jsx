@@ -1,17 +1,18 @@
+import { useState } from "react";
 import {
-    Linking,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  Linking,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import {
-    ChatBubbleLeftRightIcon,
-    ChevronLeftIcon,
-    CreditCardIcon,
-    ExclamationTriangleIcon,
-    UserGroupIcon,
+  ChatBubbleLeftRightIcon,
+  ChevronLeftIcon,
+  CreditCardIcon,
+  ExclamationTriangleIcon,
+  UserGroupIcon,
 } from "react-native-heroicons/solid";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HelpCategoryCard } from "../../components/help-kategory-card"; // Pastikan path benar
@@ -20,6 +21,7 @@ import { useSafeRouter } from "../../hooks/use-safe-router";
 
 const HelpCenterScreen = () => {
   const router = useSafeRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const openCSBrum = () => {
     // Fokus CS: Masalah sistem, pembayaran, atau penengah komplain
@@ -69,32 +71,36 @@ const HelpCenterScreen = () => {
         />
 
         {/* Komplain - Arahkan ke Alur Laporan Mitra */}
-        <HelpCategoryCard
-          title="Lapor Kendala Mitra Rental"
-          color="#FECACA"
-          icon={<ExclamationTriangleIcon size={24} color="black" />}
-          onPress={() => router.push("help/report-merchant")}
-        />
+        {isLoggedIn && (
+          <>
+            <HelpCategoryCard
+              title="Lapor Kendala Mitra Rental"
+              color="#FECACA"
+              icon={<ExclamationTriangleIcon size={24} color="black" />}
+              onPress={() => router.push("help/report-merchant")}
+            />
 
-        <View style={styles.spacer} />
+            <View style={styles.spacer} />
 
-        <Text style={styles.sectionLabel}>HUBUNGI KAMI</Text>
+            <Text style={styles.sectionLabel}>HUBUNGI KAMI</Text>
 
-        {/* Chat CS - Masalah Mendesak */}
-        <Pressable onPress={openCSBrum} style={styles.csCard}>
-          <View style={styles.csShadow} />
-          <View style={styles.csBody}>
-            <View style={styles.csIconCircle}>
-              <ChatBubbleLeftRightIcon size={24} color="black" />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.csTitle}>Chat Customer Service</Text>
-              <Text style={styles.csSubtitle}>
-                Tanggapan cepat (08:00 - 22:00 WIT)
-              </Text>
-            </View>
-          </View>
-        </Pressable>
+            {/* Chat CS - Masalah Mendesak */}
+            <Pressable onPress={openCSBrum} style={styles.csCard}>
+              <View style={styles.csShadow} />
+              <View style={styles.csBody}>
+                <View style={styles.csIconCircle}>
+                  <ChatBubbleLeftRightIcon size={24} color="black" />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.csTitle}>Chat Customer Service</Text>
+                  <Text style={styles.csSubtitle}>
+                    Tanggapan cepat (08:00 - 22:00 WIT)
+                  </Text>
+                </View>
+              </View>
+            </Pressable>
+          </>
+        )}
 
         <View style={styles.footerInfo}>
           <Text style={styles.footerText}>
