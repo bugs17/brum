@@ -67,6 +67,10 @@ export default function RootLayout() {
         <Stack.Screen name="riwayat-invoice" options={{ headerShown: false }} />
         <Stack.Screen name="pusat-bantuan" options={{ headerShown: false }} />
         <Stack.Screen name="help" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="syarat-dan-ketentuan"
+          options={{ headerShown: false }}
+        />
       </Stack>
     </GestureHandlerRootView>
   );

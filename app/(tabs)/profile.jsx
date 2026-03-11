@@ -72,7 +72,7 @@ const Profile = () => {
           <MenuItem
             icon={<ShieldCheckIcon size={22} color="black" />}
             title="Syarat & Ketentuan"
-            onPress={() => {}}
+            onPress={() => router.push("/syarat-dan-ketentuan")}
           />
 
           {isLoggedIn && (
