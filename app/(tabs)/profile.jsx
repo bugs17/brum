@@ -157,13 +157,13 @@ const AuthenticatedUI = () => {
       </View>
 
       <View style={styles.statsRow}>
-        {/* CARD SALDO WITH PRESSABLE & ANIMATION */}
         <Pressable
           onPress={() => router.push("/withdraw")}
           style={{ flex: 1, height: 80 }}
         >
           {({ pressed }) => (
             <View style={{ flex: 1 }}>
+              {/* Bayangan di luar */}
               <View style={styles.btnShadow} />
               <MotiView
                 animate={{
@@ -172,10 +172,9 @@ const AuthenticatedUI = () => {
                 }}
                 transition={{ type: "timing", duration: 50 }}
                 style={[
-                  styles.statBox,
+                  styles.btnBody, // Pakai btnBody agar sinkron dengan Invoice
                   {
                     backgroundColor: "#BAE6FD",
-                    flex: 1,
                     flexDirection: "row",
                     justifyContent: "space-between",
                     paddingHorizontal: 15,
@@ -194,7 +193,13 @@ const AuthenticatedUI = () => {
                   </View>
                   <View>
                     <Text style={styles.statLabel}>Saldo BrumWallet</Text>
-                    <Text style={styles.statValue}>Rp 125.000</Text>
+                    <Text
+                      style={styles.statValue}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                    >
+                      Rp 125.000
+                    </Text>
                   </View>
                 </View>
 
