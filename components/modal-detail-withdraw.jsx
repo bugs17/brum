@@ -13,7 +13,7 @@ const WithdrawDetailModal = ({ isVisible, onClose, data, statusStyle }) => {
       animationType="fade"
       onRequestClose={onClose}
     >
-      <Pressable style={styles.modalOverlay} onPress={onClose} />
+      <Pressable style={styles.modalOverlay} />
       <View style={styles.modalCentered}>
         <View style={styles.detailModalContainer}>
           <View style={styles.modalShadow} />
@@ -83,7 +83,7 @@ const WithdrawDetailModal = ({ isVisible, onClose, data, statusStyle }) => {
 const styles = StyleSheet.create({
   modalOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.8)",
+    backgroundColor: "rgba(0,0,0,0.9)",
   },
   modalCentered: { flex: 1, justifyContent: "center", padding: 25 },
   detailModalContainer: { position: "relative", width: "100%" },

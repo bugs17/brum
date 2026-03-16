@@ -1,28 +1,30 @@
 import {
-    KeyboardAvoidingView,
-    Modal,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import {
-    LockClosedIcon,
-    ShieldCheckIcon,
-    XMarkIcon,
+  LockClosedIcon,
+  ShieldCheckIcon,
+  XMarkIcon,
 } from "react-native-heroicons/solid";
 import { Fonts } from "../constants/fonts";
 import BrumButton from "./ui/button"; // Pastikan path ini benar
 
 const ModalOTP = ({ isVisible, onClose, onVerify }) => {
   return (
-    <Modal visible={isVisible} animationType="fade" transparent={true}>
-      <Pressable
-        style={[StyleSheet.absoluteFill, styles.overlay]}
-        onPress={onClose}
-      />
+    <Modal
+      onRequestClose={onClose}
+      visible={isVisible}
+      animationType="fade"
+      transparent={true}
+    >
+      <Pressable style={[StyleSheet.absoluteFill, styles.overlay]} />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}

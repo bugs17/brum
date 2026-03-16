@@ -1,22 +1,22 @@
 import { MotiView } from "moti";
 import { useCallback, useEffect, useState } from "react";
 import {
-    FlatList,
-    Pressable,
-    RefreshControl,
-    StyleSheet,
-    Text,
-    View,
+  FlatList,
+  Pressable,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import {
-    CheckCircleIcon,
-    ChevronLeftIcon,
-    ClockIcon,
-    InboxIcon,
-    XCircleIcon,
+  CheckCircleIcon,
+  ChevronLeftIcon,
+  ClockIcon,
+  InboxIcon,
+  XCircleIcon,
 } from "react-native-heroicons/solid";
 import { SafeAreaView } from "react-native-safe-area-context";
-import WithdrawDetailModal from "../../components/modal-detail.withdraw";
+import WithdrawDetailModal from "../../components/modal-detail-withdraw";
 import { Fonts } from "../../constants/fonts";
 import { useSafeRouter } from "../../hooks/use-safe-router";
 
@@ -260,6 +260,7 @@ const WithdrawHistory = () => {
       </View>
 
       <FlatList
+        overScrollMode="never"
         data={loading ? [1, 2, 3, 4] : historyData}
         keyExtractor={(item, index) =>
           loading ? `skeleton-${index}` : item.id

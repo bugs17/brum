@@ -86,6 +86,7 @@ const Withdraw = () => {
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
+        overScrollMode="never"
       >
         {/* INFO SALDO BOX */}
         <View style={styles.balanceInfo}>
