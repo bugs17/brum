@@ -1,0 +1,2 @@
+ssh -p 2223 -L 2375:localhost:2375 -L 54321:localhost:54321 -L 
+54322:localhost:54322 -L 54323:localhost:54323 bugs@36.95.2.130

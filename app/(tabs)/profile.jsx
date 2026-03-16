@@ -19,7 +19,7 @@ import { useSafeRouter } from "../../hooks/use-safe-router";
 
 const Profile = () => {
   const router = useSafeRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -137,6 +137,7 @@ const GuestUI = () => (
 // --- SUB-COMPONENT: AUTHENTICATED UI ---
 const AuthenticatedUI = () => {
   const router = useSafeRouter();
+
   return (
     <View style={styles.authContainer}>
       <View style={styles.userHeader}>
@@ -156,17 +157,59 @@ const AuthenticatedUI = () => {
       </View>
 
       <View style={styles.statsRow}>
-        {/* Card Saldo Jadi Full Width */}
-        <View style={[styles.statBox, { backgroundColor: "#BAE6FD", flex: 1 }]}>
-          <CreditCardIcon size={20} color="black" />
-          <View>
-            <Text style={styles.statLabel}>Saldo BrumWallet</Text>
-            <Text style={styles.statValue}>Rp 125.000</Text>
-          </View>
-        </View>
+        {/* CARD SALDO WITH PRESSABLE & ANIMATION */}
+        <Pressable
+          onPress={() => router.push("/withdraw")}
+          style={{ flex: 1, height: 80 }}
+        >
+          {({ pressed }) => (
+            <View style={{ flex: 1 }}>
+              <View style={styles.btnShadow} />
+              <MotiView
+                animate={{
+                  translateX: pressed ? 4 : 0,
+                  translateY: pressed ? 4 : 0,
+                }}
+                transition={{ type: "timing", duration: 50 }}
+                style={[
+                  styles.statBox,
+                  {
+                    backgroundColor: "#BAE6FD",
+                    flex: 1,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    paddingHorizontal: 15,
+                  },
+                ]}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 12,
+                  }}
+                >
+                  <View style={styles.iconCircle}>
+                    <CreditCardIcon size={20} color="black" />
+                  </View>
+                  <View>
+                    <Text style={styles.statLabel}>Saldo BrumWallet</Text>
+                    <Text style={styles.statValue}>Rp 125.000</Text>
+                  </View>
+                </View>
+
+                {/* MINI WITHDRAW BUTTON */}
+                <View style={styles.miniActionBtn}>
+                  <Text style={styles.miniActionText}>WITHDRAW</Text>
+                  <ChevronRightIcon size={14} color="black" />
+                </View>
+              </MotiView>
+            </View>
+          )}
+        </Pressable>
       </View>
 
-      {/* Button Menu Riwayat Invoice */}
+      {/* BUTTON MENU RIWAYAT INVOICE */}
       <Pressable
         onPress={() => router.push("/riwayat-invoice")}
         style={styles.invoiceBtnWrapper}
@@ -242,6 +285,32 @@ const MenuItem = ({ icon, title, isLast, color = "black", onPress }) => (
 );
 
 const styles = StyleSheet.create({
+  iconCircle: {
+    width: 38,
+    height: 38,
+    backgroundColor: "white",
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "black",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  miniActionBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#dff940",
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "black",
+    gap: 4,
+  },
+  miniActionText: {
+    fontFamily: Fonts.bold,
+    fontSize: 10,
+    color: "black",
+  },
   container: { flex: 1, backgroundColor: "#FDFDFD" },
   scrollContent: { padding: 25 },
   headerRow: {

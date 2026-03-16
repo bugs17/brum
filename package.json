@@ -10,7 +10,8 @@
     "ios": "expo run:ios",
     "android:usb": "adb reverse tcp:8081 tcp:8081 && npx expo start --dev-client --localhost --android",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "gen:types": "npx supabase gen types typescript --project-id ugzhuokczxhacvvulahs > types/supabase.types.ts"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
