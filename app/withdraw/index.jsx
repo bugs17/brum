@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
   ChevronLeftIcon,
+  ClockIcon,
   ExclamationTriangleIcon,
 } from "react-native-heroicons/solid";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -73,6 +74,13 @@ const Withdraw = () => {
         </Pressable>
         <Text style={styles.headerTitle}>Tarik Saldo</Text>
         <View style={{ width: 45 }} />
+        <Pressable
+          onPress={() => router.push("/withdraw/history")}
+          style={styles.historyBtnHeader}
+        >
+          <ClockIcon size={18} color="black" />
+          <Text style={styles.historyBtnText}>Riwayat</Text>
+        </Pressable>
       </View>
 
       <ScrollView
@@ -218,7 +226,8 @@ const Withdraw = () => {
         onClose={() => setShowOTP(false)}
         onVerify={() => {
           setShowOTP(false);
-          alert("Berhasil!");
+          // Arahkan ke screen riwayat setelah sukses
+          router.replace("/withdraw/history");
         }}
       />
     </SafeAreaView>
@@ -226,6 +235,22 @@ const Withdraw = () => {
 };
 
 const styles = StyleSheet.create({
+  historyBtnHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderWidth: 2,
+    borderColor: "black",
+    borderRadius: 12,
+    backgroundColor: "#FEF08A", // Warna kuning soft agar beda dari tombol utama
+  },
+  historyBtnText: {
+    fontFamily: Fonts.bold,
+    fontSize: 11,
+    color: "black",
+  },
   container: { flex: 1, backgroundColor: "#FDFDFD" },
   header: {
     flexDirection: "row",
