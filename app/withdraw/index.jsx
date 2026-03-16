@@ -1,29 +1,48 @@
-import { MotiView } from "moti";
-import { useState } from "react";
+import { AnimatePresence, MotiView } from "moti";
+import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
-    ChevronLeftIcon,
-    ExclamationTriangleIcon,
+  ChevronLeftIcon,
+  ExclamationTriangleIcon,
 } from "react-native-heroicons/solid";
 import { SafeAreaView } from "react-native-safe-area-context";
+import ModalOTP from "../../components/modal-otp";
 import { Fonts } from "../../constants/fonts";
 import { useSafeRouter } from "../../hooks/use-safe-router";
 
 const Withdraw = () => {
   const router = useSafeRouter();
   const [amount, setAmount] = useState("0");
-  const balance = 125000000000; // Contoh saldo dari profil
+  const [isLoading, setIsLoading] = useState(false);
+  const [showOTP, setShowOTP] = useState(false);
+  const [error, setError] = useState("");
+
+  // Contoh Saldo
+  const balance = 125000;
 
   const quickAmounts = [50000, 100000, 250000, 500000];
 
-  const handleNumpad = (val) => {
-    if (val === "DEL") {
-      setAmount((prev) => (prev.length > 1 ? prev.slice(0, -1) : "0"));
-    } else if (val === "000") {
-      setAmount((prev) => (prev === "0" ? "0" : prev + "000"));
+  // Logika Cek Saldo Real-time setiap kali 'amount' berubah
+  useEffect(() => {
+    if (parseInt(amount) > balance) {
+      setError("Saldo tidak cukup!");
     } else {
-      setAmount((prev) => (prev === "0" ? val : prev + val));
+      setError("");
     }
+  }, [amount]);
+
+  const handleNumpad = (val) => {
+    setAmount((prev) => {
+      let nextValue = prev;
+      if (val === "DEL") {
+        nextValue = prev.length > 1 ? prev.slice(0, -1) : "0";
+      } else if (val === "000") {
+        nextValue = prev === "0" ? "0" : prev + "000";
+      } else {
+        nextValue = prev === "0" ? val : prev + val;
+      }
+      return nextValue;
+    });
   };
 
   const formatCurrency = (val) => {
@@ -34,9 +53,20 @@ const Withdraw = () => {
     }).format(parseInt(val));
   };
 
+  const handleWithdrawSubmit = () => {
+    if (parseInt(amount) === 0) return;
+    if (parseInt(amount) > balance) return;
+
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setShowOTP(true);
+    }, 2000);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* HEADER - Gaya Neubrutalisme */}
+      {/* HEADER */}
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
           <ChevronLeftIcon size={24} color="black" />
@@ -60,14 +90,31 @@ const Withdraw = () => {
           </View>
         </View>
 
-        {/* INPUT DISPLAY */}
+        {/* INPUT DISPLAY SECTION */}
         <View style={styles.inputSection}>
-          <Text style={styles.sectionTitle}>Jumlah Penarikan</Text>
+          <View style={styles.labelRow}>
+            <Text style={styles.sectionTitle}>Jumlah Penarikan</Text>
+            {/* REAL-TIME ERROR LABEL */}
+            <AnimatePresence>
+              {error ? (
+                <MotiView
+                  from={{ opacity: 0, translateX: 10 }}
+                  animate={{ opacity: 1, translateX: 0 }}
+                  exit={{ opacity: 0, translateX: 10 }}
+                >
+                  <Text style={styles.inlineErrorText}>{error}</Text>
+                </MotiView>
+              ) : null}
+            </AnimatePresence>
+          </View>
+
           <View style={styles.displayWrapper}>
             <View style={styles.displayShadow} />
-            <View style={styles.displayBody}>
+            <View
+              style={[styles.displayBody, error && { borderColor: "#FF4444" }]}
+            >
               <Text
-                style={styles.displayText}
+                style={[styles.displayText, error && { color: "#FF4444" }]}
                 numberOfLines={1}
                 adjustsFontSizeToFit
               >
@@ -83,14 +130,15 @@ const Withdraw = () => {
             <Pressable
               key={val}
               onPress={() => setAmount(val.toString())}
-              style={styles.quickBtn}
+              disabled={isLoading}
+              style={[styles.quickBtn, val > balance && { opacity: 0.5 }]}
             >
               <Text style={styles.quickText}>{val / 1000}K</Text>
             </Pressable>
           ))}
         </View>
 
-        {/* NUMPAD CUSTOM - Biar gaya Brum makin sangar */}
+        {/* NUMPAD */}
         <View style={styles.numpadContainer}>
           {["1", "2", "3", "4", "5", "6", "7", "8", "9", "000", "0", "DEL"].map(
             (key) => (
@@ -98,6 +146,7 @@ const Withdraw = () => {
                 key={key}
                 onPress={() => handleNumpad(key)}
                 style={styles.numKeyWrapper}
+                disabled={isLoading}
               >
                 {({ pressed }) => (
                   <View style={{ flex: 1 }}>
@@ -134,27 +183,44 @@ const Withdraw = () => {
         {/* SUBMIT BUTTON */}
         <Pressable
           style={styles.submitBtn}
-          onPress={() => alert(`Menarik: ${formatCurrency(amount)}`)}
+          onPress={handleWithdrawSubmit}
+          disabled={isLoading || error !== "" || amount === "0"}
         >
           {({ pressed }) => (
             <View style={{ height: 60, width: "100%" }}>
               <View style={styles.btnShadow} />
               <MotiView
                 animate={{
-                  translateX: pressed ? 4 : 0,
-                  translateY: pressed ? 4 : 0,
+                  translateX: pressed || isLoading ? 5 : 0,
+                  translateY: pressed || isLoading ? 5 : 0,
                 }}
                 transition={{ type: "timing", duration: 50 }}
-                style={styles.btnBody}
+                style={[
+                  styles.btnBody,
+                  {
+                    backgroundColor:
+                      isLoading || error || amount === "0" ? "#CCC" : "#dff940",
+                  },
+                ]}
               >
-                <Text style={styles.btnText}>TARIK SEKARANG</Text>
+                <Text style={styles.btnText}>
+                  {isLoading ? "PROSES..." : "TARIK SEKARANG"}
+                </Text>
               </MotiView>
             </View>
           )}
         </Pressable>
-
         <View style={{ height: 50 }} />
       </ScrollView>
+
+      <ModalOTP
+        isVisible={showOTP}
+        onClose={() => setShowOTP(false)}
+        onVerify={() => {
+          setShowOTP(false);
+          alert("Berhasil!");
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -170,9 +236,6 @@ const styles = StyleSheet.create({
   },
   backBtn: {
     padding: 10,
-    borderWidth: 2,
-    borderColor: "black",
-    borderRadius: 12,
     backgroundColor: "white",
   },
   headerTitle: { fontFamily: Fonts.bold, fontSize: 20 },
@@ -199,7 +262,24 @@ const styles = StyleSheet.create({
   infoLabel: { fontFamily: Fonts.regular, fontSize: 12 },
   infoValue: { fontFamily: Fonts.bold, fontSize: 20 },
   inputSection: { marginBottom: 20 },
-  sectionTitle: { fontFamily: Fonts.bold, fontSize: 16, marginBottom: 12 },
+  labelRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  sectionTitle: { fontFamily: Fonts.bold, fontSize: 16 },
+  inlineErrorText: {
+    fontFamily: Fonts.bold,
+    fontSize: 12,
+    color: "#FF4444",
+    backgroundColor: "#FFE4E4",
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "#FF4444",
+  },
   displayWrapper: { height: 80 },
   displayShadow: {
     position: "absolute",
