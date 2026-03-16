@@ -75,6 +75,7 @@ export default function RootLayout() {
           name="kebijakan-privasi"
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="withdraw" options={{ headerShown: false }} />
       </Stack>
     </GestureHandlerRootView>
   );
